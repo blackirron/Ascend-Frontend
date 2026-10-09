@@ -1,0 +1,2192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Ascend Starter prototype</title>
+<script src="./vendor/react.js"></script>
+<script src="./vendor/react-dom.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Instrument+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+*{box-sizing:border-box}
+
+.app{width:100vw;height:100vh;min-width:1100px;min-height:760px;display:flex;flex-direction:column;background:#F4F6F8;font-family:'Instrument Sans',system-ui,sans-serif;color:#12202A;position:relative;overflow:hidden;-webkit-font-smoothing:antialiased}
+.nav{height:64px;flex:none;background:#fff;border-bottom:1px solid #DDE3E8;display:flex;align-items:center;padding:0 40px;gap:28px}
+.brand{display:flex;align-items:center;gap:10px}
+.wm{font:800 24px/1 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.navlinks{display:flex;gap:4px;flex:1}
+.nl{height:40px;padding:0 16px;border-radius:10px;border:0;background:none;font:600 15px 'Instrument Sans',system-ui,sans-serif;color:#5B6770;cursor:pointer}
+.nl:hover{background:#EEF2F5}
+.nl.on{color:#0B6A73;background:#E2F3F5}
+.grow{flex:1}
+.shellrow{flex:1;min-height:0;display:flex}
+.shellcol{flex:1;min-width:0;display:flex;flex-direction:column}
+.side{width:248px;flex:none;background:#fff;border-right:1px solid #DDE3E8;display:flex;flex-direction:column;padding:20px 16px;gap:4px;overflow-y:auto}
+.side .brand{padding:4px 8px 20px}
+.sl{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:10px;border:0;background:none;font:600 15px 'Instrument Sans',system-ui,sans-serif;color:#5B6770;cursor:pointer;text-align:left;width:100%}
+.sl svg{flex:none}
+.sl:hover{background:#EEF2F5}
+.sl.on{color:#0B6A73;background:#E2F3F5}
+.sl:focus-visible{outline:3px solid #0E7C86;outline-offset:2px}
+.plogo{display:flex;align-items:center;justify-content:center;min-height:72px;padding:12px 16px;border:1px solid #DDE3E8;border-radius:12px;background:#fff;transition:box-shadow .15s,border-color .15s}.plogo:hover{border-color:#B9DFE3;box-shadow:0 2px 10px rgba(14,124,134,.10)}.plogo img{max-width:100%;max-height:40px;width:auto;height:auto;object-fit:contain}.pname{font:700 14px/1.3 "Bricolage Grotesque",system-ui,sans-serif;color:#12202A;text-align:center}
+.sidepromo{margin-top:auto;background:#E2F3F5;border:1px solid #B9DFE3;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.uname{font:600 14px 'Instrument Sans',system-ui,sans-serif;color:#12202A}
+.chip{height:36px;padding:0 16px;border-radius:999px;border:1.5px solid #0E7C86;background:#fff;color:#0B6A73;font:600 14px 'Instrument Sans',system-ui,sans-serif;cursor:pointer}
+.chip.fill{background:#0E7C86;color:#fff}
+.chip.warn{border-color:#B7791F;color:#7A4E08}
+.avatar{width:36px;height:36px;border-radius:50%;background:#12202A;color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Instrument Sans',system-ui,sans-serif}
+.main{flex:1;min-height:0;overflow-y:auto}
+.main::-webkit-scrollbar{width:8px}
+.main::-webkit-scrollbar-thumb{background:#C9D2D9;border-radius:4px}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:32px 40px 56px;display:flex;flex-direction:column;gap:24px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:24px;align-items:start}
+.grid2e{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.stack{display:flex;flex-direction:column;gap:24px;min-width:0}
+.card{background:#fff;border:1px solid #DDE3E8;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card.tint{background:#E2F3F5;border-color:#B9DFE3}
+.card.dark{background:#12202A;border-color:#12202A;color:#fff}
+.h1{margin:0;font:800 40px/1.06 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.025em}
+.h2{margin:0;font:700 28px/1.12 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em}
+.h3{margin:0;font:700 18px/1.2 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.01em}
+.disp{font:800 64px/1 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.03em;font-variant-numeric:lining-nums tabular-nums}
+.fig{font:700 32px/1 'Bricolage Grotesque',system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums;letter-spacing:-.01em}
+.fig.sm{font-size:24px}
+.lbl{font:600 14px/20px 'Instrument Sans',system-ui,sans-serif}
+.body{font:400 16px/24px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45;margin:0}
+.lead{font:400 18px/28px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45;margin:0}
+.help{font:400 13px/19px 'Instrument Sans',system-ui,sans-serif;color:#5B6770;margin:0}
+.btn{height:48px;padding:0 24px;border-radius:12px;border:0;background:#12202A;color:#fff;font:600 16px 'Instrument Sans',system-ui,sans-serif;cursor:pointer;flex:none;white-space:nowrap}
+.btn:hover{background:#22333F}
+.btn.pri{background:#0E7C86}
+.btn.pri:hover{background:#0B6A73}
+.btn.sec{background:#fff;color:#12202A;border:1.5px solid #12202A}
+.btn.sec:hover{background:#F4F6F8}
+.btn.bad{background:#B3261E}
+.btn.sm{height:40px;padding:0 16px;font-size:14px}
+.btn.wide{width:100%}
+.btn[disabled]{opacity:.38;cursor:not-allowed}
+.btn:focus-visible,.link:focus-visible,.nl:focus-visible,.chip:focus-visible,.dk:focus-visible,.opt:focus-visible,.tog:focus-visible,.segb:focus-visible,.ack:focus-visible,.cat:focus-visible{outline:3px solid #0E7C86;outline-offset:2px}
+.link{background:none;border:0;padding:0;color:#0B6A73;font:600 14px 'Instrument Sans',system-ui,sans-serif;text-decoration:underline;cursor:pointer;text-align:left}
+.in{width:100%;height:48px;border-radius:12px;border:1.5px solid #C4CED6;padding:0 14px;font:400 16px 'Instrument Sans',system-ui,sans-serif;color:#12202A;background:#fff}
+.in:focus{outline:3px solid #0E7C86;outline-offset:1px;border-color:#0E7C86}
+.in.err{border-color:#B3261E}
+.in.code{letter-spacing:.4em;font-weight:600;text-align:center}
+.field{display:flex;flex-direction:column;gap:6px}
+.pre{display:flex;gap:8px}
+.prefix{height:48px;min-width:60px;border-radius:12px;background:#EAEFF2;display:flex;align-items:center;justify-content:center;font:600 15px 'Instrument Sans',system-ui,sans-serif}
+.fixed{height:48px;border-radius:12px;border:1.5px solid #DDE3E8;background:#F4F6F8;display:flex;align-items:center;padding:0 14px;font:500 16px 'Instrument Sans',system-ui,sans-serif}
+.ban{border-radius:12px;padding:12px 16px;display:flex;gap:10px;font:500 14.5px/21px 'Instrument Sans',system-ui,sans-serif}
+.ban.warn{background:#F8EEDA;color:#5E3C03}
+.ban.bad{background:#F7E1DF;color:#7A1B15}
+.ban.ok{background:#E3F1E9;color:#14502F}
+.ban.info{background:#E2F3F5;color:#0A4F57}
+.pill{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font:600 12.5px 'Instrument Sans',system-ui,sans-serif;white-space:nowrap}
+.pill.ok{background:#E3F1E9;color:#14502F}
+.pill.warn{background:#F8EEDA;color:#5E3C03}
+.pill.bad{background:#F7E1DF;color:#7A1B15}
+.pill.neu{background:#EAEFF2;color:#2B3A45}
+.pill.lap{background:#E2F3F5;color:#0A4F57}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.cols{display:flex;gap:12px}
+.col{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.sep{height:1px;background:#E6EBEF;flex:none}
+.tog{width:48px;height:28px;border-radius:999px;background:#C4CED6;position:relative;border:0;cursor:pointer;flex:none;padding:0}
+.tog::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.tog.on{background:#0E7C86}
+.tog.on::after{left:23px}
+.tog[disabled]{opacity:.4;cursor:not-allowed}
+.stepper{display:flex;gap:0;align-items:center}
+.stp{display:flex;align-items:center;gap:10px;font:600 14px 'Instrument Sans',system-ui,sans-serif;color:#5B6770}
+.stp .sn{width:28px;height:28px;border-radius:50%;border:2px solid #C4CED6;display:flex;align-items:center;justify-content:center;font:700 13px 'Instrument Sans',system-ui,sans-serif;background:#fff}
+.stp.cur{color:#12202A}
+.stp.cur .sn{background:#0E7C86;border-color:#0E7C86;color:#fff}
+.stp.done .sn{background:#E3F1E9;border-color:#1F7A4D;color:#14502F}
+.stline{width:22px;height:2px;background:#C4CED6;margin:0 8px}
+.hero{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:48px;align-items:start;padding-top:8px}
+.stairs{display:flex;flex-direction:column;gap:12px;padding:8px 0 4px}
+.st span{display:inline-block;font:800 46px/1.08 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.03em;border-bottom:6px solid #0E7C86;padding-bottom:6px}
+.st.s1{margin-left:44px}
+.st.s2{margin-left:88px}
+.hiw{display:flex;gap:16px;align-items:flex-start}
+.hiwc{flex:1;min-width:0;background:#fff;border:1px solid #DDE3E8;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px;border-top:5px solid #0E7C86}
+.hiwn{font:800 22px/1 'Bricolage Grotesque',system-ui,sans-serif;color:#0E7C86}
+.opt{width:100%;border:1.5px solid #DDE3E8;background:#fff;border-radius:14px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;font:500 16px 'Instrument Sans',system-ui,sans-serif;color:#12202A;cursor:pointer;text-align:left}
+.opt:hover{border-color:#9DB3BE}
+.opt.on{border-color:#0E7C86;background:#F0FAFB}
+.rad{width:20px;height:20px;border-radius:50%;border:2px solid #C4CED6;flex:none}
+.opt.on .rad{border:6px solid #0E7C86}
+.bars{position:relative;height:230px}
+.barrow{position:absolute;left:0;right:0;bottom:0;height:230px;display:flex;align-items:flex-end;gap:18px}
+.barcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:230px}
+.bar{width:100%;background:#12202A;border-radius:8px 8px 0 0}
+.bartxt{font:500 12.5px/16px 'Instrument Sans',system-ui,sans-serif;color:#5B6770}
+.avgline{position:absolute;left:0;right:0;border-top:2px dashed #0E7C86}
+.ladder{display:flex;align-items:flex-end;gap:10px;height:230px}
+.step{flex:1;border-radius:12px 12px 0 0;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;border:1.5px solid #C4CED6;background:#fff;color:#12202A}
+.step.cur{background:#0E7C86;border-color:#0E7C86;color:#fff}
+.step.done{background:#E3F1E9;border-color:#1F7A4D}
+.step .sn2{font:700 16px 'Bricolage Grotesque',system-ui,sans-serif}
+.step .sc{font:800 24px 'Bricolage Grotesque',system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums}
+.step .sr{font:400 13px/18px 'Instrument Sans',system-ui,sans-serif;opacity:.92}
+.meter{display:flex;align-items:flex-end;gap:10px;height:96px}
+.mb{width:56px;border-radius:10px 10px 4px 4px;transform-origin:bottom}
+.pulse .mb{animation:rise .9s ease-out}
+@keyframes rise{from{transform:scaleY(.35)}to{transform:scaleY(1)}}
+.slider{width:100%;accent-color:#0E7C86;height:32px;margin:0}
+.seg{display:flex;background:#EAEFF2;border-radius:12px;padding:3px;gap:3px}
+.segb{flex:1;height:44px;border:0;border-radius:10px;background:transparent;font:600 15px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45;cursor:pointer}
+.segb.on{background:#fff;box-shadow:0 1px 3px rgba(18,32,42,.18)}
+.crow{display:flex;gap:16px;justify-content:space-between;padding:11px 0;border-bottom:1px solid #E6EBEF}
+.crow:last-child{border-bottom:0}
+.ck{flex:0 0 36%;font:600 14px/20px 'Instrument Sans',system-ui,sans-serif;color:#12202A}
+.cv{flex:1;min-width:0;font:400 14px/20px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.exr{display:flex;gap:12px;align-items:flex-start;padding:10px 0}
+.exk{flex:0 0 150px;font:600 14px/20px 'Instrument Sans',system-ui,sans-serif}
+.exv{flex:1;min-width:0;font:400 15px/22px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.lim{height:10px;border-radius:999px;background:#DDE3E8;overflow:hidden}
+.lim>div{height:100%;background:#0E7C86}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.kvk{font:500 15px/22px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.kvv{font:700 20px 'Bricolage Grotesque',system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums}
+.ack{display:flex;gap:12px;align-items:flex-start;border:0;background:none;padding:0;text-align:left;cursor:pointer;font:500 15px/22px 'Instrument Sans',system-ui,sans-serif;color:#12202A}
+.box{width:24px;height:24px;border-radius:7px;border:2px solid #5B6770;flex:none;display:flex;align-items:center;justify-content:center;background:#fff;margin-top:1px}
+.box.on{background:#0E7C86;border-color:#0E7C86}
+.mp{display:flex;align-items:center;gap:10px}
+.node{flex:1;border-radius:14px;border:1.5px solid #C4CED6;background:#fff;padding:18px;display:flex;flex-direction:column;gap:2px;min-height:96px;justify-content:center}
+.node.live{border-color:#1F7A4D;background:#E3F1E9}
+.arr{width:64px;flex:none;height:3px;background:#C4CED6;position:relative}
+.arr.live{background:#1F7A4D}
+.ascnode{border:1.5px dashed #5B6770;border-radius:14px;padding:14px 16px;display:flex;gap:12px;align-items:center;font:500 15px/22px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.timeline{display:flex;flex-direction:column}
+.trow{display:flex;gap:14px;align-items:center;padding:13px 0;border-bottom:1px solid #E6EBEF}
+.trow:last-child{border-bottom:0}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;background:#C4CED6}
+.dot.ok{background:#1F7A4D}
+.dot.warn{background:#B7791F}
+.cat{height:44px;padding:0 16px;border-radius:999px;border:1.5px solid #C4CED6;background:#fff;font:600 15px 'Instrument Sans',system-ui,sans-serif;color:#12202A;cursor:pointer}
+.cat.on{background:#0E7C86;border-color:#0E7C86;color:#fff}
+.offer{border:1px solid #DDE3E8;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px;background:#fff}
+.offern{font:800 34px/1 'Bricolage Grotesque',system-ui,sans-serif;color:#0E7C86;letter-spacing:-.02em}
+.sig{flex:1;border-radius:14px;padding:16px;background:#F4F6F8;display:flex;flex-direction:column;gap:8px;border:1px solid #DDE3E8}
+.sig.ok{background:#E3F1E9;border-color:#B5D9C3}
+.track{position:relative;height:12px;border-radius:6px;background:#E6EBEF}
+.fillb{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.mark{position:absolute;top:-5px;bottom:-5px;width:2px;background:#12202A}
+.scrim{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(18,32,42,.55);display:flex;align-items:center;justify-content:center;z-index:20}
+.modal{width:580px;max-height:82%;overflow-y:auto;background:#fff;border-radius:20px;padding:30px;display:flex;flex-direction:column;gap:14px;box-shadow:0 24px 60px rgba(18,32,42,.35)}
+.toast{position:absolute;left:50%;top:76px;transform:translateX(-50%);background:#12202A;color:#fff;border-radius:12px;padding:12px 20px;font:500 15px/22px 'Instrument Sans',system-ui,sans-serif;z-index:30;box-shadow:0 10px 30px rgba(18,32,42,.3)}
+.full{position:absolute;left:0;right:0;top:0;bottom:0;background:#F4F6F8;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.dock{height:84px;flex:none;background:#12202A;color:#fff;padding:0 24px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.dockrow{display:flex;align-items:center;gap:6px}
+.dlab{font:600 12.5px 'Instrument Sans',system-ui,sans-serif;color:#9FB0BC;margin-right:6px}
+.dk{height:30px;padding:0 12px;border-radius:8px;border:1px solid #3A4A56;background:transparent;color:#E6ECF0;font:600 13px 'Instrument Sans',system-ui,sans-serif;cursor:pointer;white-space:nowrap}
+.dk:hover{background:#22333F}
+.dk.on{background:#2BA4B0;border-color:#2BA4B0;color:#06232A}
+.dk.n{width:30px;padding:0}
+.dtag{height:22px;padding:0 8px;border-radius:999px;background:#F8EEDA;color:#5E3C03;font:700 12px/22px 'Instrument Sans',system-ui,sans-serif;margin-right:6px}
+.dsep{width:1px;height:20px;background:#3A4A56;margin:0 8px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.kpi{background:#fff;border:1px solid #DDE3E8;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.kpil{font:600 14px/19px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.kpin{font:800 40px/1 'Bricolage Grotesque',system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:lining-nums tabular-nums}
+.chart{position:relative;height:210px}
+.cbars{position:absolute;left:40px;right:0;bottom:0;height:210px;display:flex;align-items:flex-end;justify-content:space-around;gap:24px}
+.cbc{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:210px}
+.cb{width:100%;max-width:80px;border-radius:8px 8px 0 0}
+.thr{position:absolute;left:40px;right:0;border-top:1.5px dashed #B3261E}
+.thr.t6{border-color:#B7791F}
+.thrt{position:absolute;left:0;width:34px;transform:translateY(-50%);font:600 12px 'Instrument Sans',system-ui,sans-serif;color:#5B6770;text-align:right}
+.fn{display:flex;flex-direction:column;gap:10px}
+.fnr{display:flex;align-items:center;gap:12px}
+.fnl{width:170px;flex:none;font:500 14px/18px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45}
+.fnt{flex:1;height:24px;background:#EAEFF2;border-radius:6px;position:relative}
+.fnb{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:#0E7C86}
+.fnv{width:56px;flex:none;text-align:right;font:700 15px 'Instrument Sans',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.tbl{width:100%;border-collapse:collapse;font:500 14.5px 'Instrument Sans',system-ui,sans-serif}
+.tbl th{text-align:left;font:600 13px 'Instrument Sans',system-ui,sans-serif;color:#5B6770;padding:10px 12px;border-bottom:1px solid #DDE3E8}
+.tbl td{padding:12px;border-bottom:1px solid #EEF2F5;font-variant-numeric:tabular-nums}
+.tbl tr.live td{background:#E2F3F5;font-weight:600}
+.earn{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.earn>div{border:1px solid #DDE3E8;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+@media (prefers-reduced-motion:reduce){.pulse .mb{animation:none}.tog::after{transition:none}}
+</style>
+</helmet>
+
+<div class="app">
+  <div class="shellrow">
+    <sc-if value="{{ showSide }}" hint-placeholder-val="{{ false }}">
+      <aside class="side" aria-label="Main navigation">
+        <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="21" width="8" height="10" rx="2" fill="#12202A"></rect><rect x="13" y="13" width="8" height="18" rx="2" fill="#12202A"></rect><rect x="23" y="4" width="8" height="27" rx="2" fill="#0E7C86"></rect></svg>
+      <span class="wm">Ascend</span>
+    </div>
+        <button class="sl {{ tabHome }}" onClick="{{ toHome }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>Home</button>
+        <button class="sl {{ tabBorrow }}" onClick="{{ toDraw }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Borrow</button>
+        <button class="sl {{ tabSpend }}" onClick="{{ toSpend }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V4h9l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="8.5" r="1.2"/></svg>Spend it</button>
+        <button class="sl {{ tabRepay }}" onClick="{{ toRepay }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>Repayments</button>
+        <button class="sl {{ tabScore }}" onClick="{{ toScore }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Score and limit</button>
+        <button class="sl {{ tabRecord }}" onClick="{{ toRecord }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Record and privacy</button>
+        <button class="sl {{ tabAbout }}" onClick="{{ toAbout }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></svg>About</button>
+        <div class="sidepromo">
+          <svg width="44" height="34" viewBox="0 0 44 34" aria-hidden="true"><rect x="2" y="22" width="10" height="10" rx="2" fill="#0E7C86"></rect><rect x="16" y="13" width="10" height="19" rx="2" fill="#0E7C86"></rect><rect x="30" y="3" width="10" height="29" rx="2" fill="#0E7C86"></rect></svg>
+          <span class="h3" style="font-size:16px">Build your financial future.</span>
+          <span class="help" style="color:#2B3A45">One step at a time. Hyderabad pilot, sandbox partners.</span>
+        </div>
+      </aside>
+    </sc-if>
+    <div class="shellcol">
+  <!-- TOP NAV -->
+  <div class="nav">
+    <sc-if value="{{ noSide }}" hint-placeholder-val="{{ true }}"><div class="brand">
+      <svg width="30" height="30" viewBox="0 0 34 34" aria-hidden="true"><rect x="3" y="21" width="8" height="10" rx="2" fill="#12202A"></rect><rect x="13" y="13" width="8" height="18" rx="2" fill="#12202A"></rect><rect x="23" y="4" width="8" height="27" rx="2" fill="#0E7C86"></rect></svg>
+      <span class="wm">Ascend</span>
+    </div></sc-if>
+    <div class="grow"></div>
+    <sc-if value="{{ isConsoleView }}" hint-placeholder-val="{{ false }}"><span class="pill neu">Partner lender console · Sandbox lender</span></sc-if>
+    <sc-if value="{{ showChip }}" hint-placeholder-val="{{ false }}">
+      <button class="chip {{ chipCls }}" onClick="{{ openTier }}">{{ tierLabel }}</button>
+      <span class="uname">{{ userName }}</span><div class="avatar" aria-hidden="true">{{ initials }}</div>
+    </sc-if>
+    <sc-if value="{{ showPilot }}" hint-placeholder-val="{{ true }}"><span class="pill lap">Hyderabad campus cluster pilot</span></sc-if>
+  </div>
+
+  <div class="main">
+  <sc-if value="{{ isAppView }}" hint-placeholder-val="{{ true }}">
+  <div class="wrap">
+
+    <!-- Stepper -->
+    <sc-if value="{{ showStepper }}" hint-placeholder-val="{{ false }}">
+      <div class="stepper">
+        <sc-for list="{{ steps }}" as="sp" hint-placeholder-count="7">
+          <div class="stp {{ sp.cls }}"><span class="sn">{{ sp.n }}</span>{{ sp.label }}</div>
+          <sc-if value="{{ sp.line }}" hint-placeholder-val="{{ true }}"><div class="stline"></div></sc-if>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- 1 WELCOME -->
+    <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+      <div class="hero">
+        <div class="stack" style="gap:28px">
+          <div class="stairs">
+            <div class="st s0"><span>Credit in your name.</span></div>
+            <div class="st s1"><span>A record that is yours.</span></div>
+            <div class="st s2"><span>Full cost, up front.</span></div>
+          </div>
+          <p class="lead" style="max-width:520px">Put in a refundable deposit, get a small starting limit from a regulated lender, and build a credit record by repaying on time. Ascend never holds your money.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <span class="pill ok">Refundable deposit</span><span class="pill lap">Full cost shown first</span><span class="pill neu">No contact-list access</span>
+          </div>
+          <button class="link" style="align-self:flex-start" onClick="{{ toAbout }}">About Ascend and our partners</button>
+        </div>
+        <div class="card" style="gap:16px;box-shadow:0 12px 32px rgba(18,32,42,.08)">
+          <span class="h3">Create your account</span>
+          <div class="field">
+            <label class="lbl" for="phone">Mobile number</label>
+            <div class="pre"><div class="prefix">+91</div><input id="phone" class="in" inputmode="numeric" value="{{ phone }}" onChange="{{ onPhone }}"></div>
+          </div>
+          <sc-if value="{{ showSend }}" hint-placeholder-val="{{ true }}">
+            <button class="btn pri wide" disabled="{{ sendOff }}" onClick="{{ sendCode }}">Send code</button>
+          </sc-if>
+          <sc-if value="{{ otpSent }}" hint-placeholder-val="{{ true }}">
+            <div class="field">
+              <label class="lbl" for="otp">Enter the 6-digit code</label>
+              <input id="otp" class="in code {{ otpCls }}" inputmode="numeric" maxlength="6" value="{{ otp }}" onChange="{{ onOtp }}">
+              <div class="spread">
+                <p class="help">Demo code: 123456</p>
+                <sc-if value="{{ otpOK }}" hint-placeholder-val="{{ false }}"><span class="pill ok">Verified</span></sc-if>
+                <sc-if value="{{ otpNotOK }}" hint-placeholder-val="{{ true }}"><button class="link" onClick="{{ fillOtp }}">Use demo code</button></sc-if>
+              </div>
+              <sc-if value="{{ otpWrong }}" hint-placeholder-val="{{ false }}"><p class="help" style="color:#B3261E">That code does not match. Try again.</p></sc-if>
+            </div>
+          </sc-if>
+          <button class="btn pri wide" disabled="{{ welcomeOff }}" onClick="{{ toConsent }}">Continue</button>
+          <p class="help">Hyderabad campus pilot. Next you choose what data to share. Nothing is shared yet. Your age and college are checked when you put in your deposit.</p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;padding-top:12px">
+        <span class="h2">How Ascend works</span>
+        <div class="hiw">
+          <div class="hiwc" style="margin-top:100px"><span class="hiwn">1</span><span class="h3">Deposit</span><span class="help" style="color:#2B3A45">Put in a refundable deposit, for example ₹5,000.</span></div>
+          <div class="hiwc" style="margin-top:80px"><span class="hiwn">2</span><span class="h3">Initial limit</span><span class="help" style="color:#2B3A45">The partner lender sets a small limit of 1.5 times your deposit. You can use all of it, in one spend or many.</span></div>
+          <div class="hiwc" style="margin-top:60px"><span class="hiwn">3</span><span class="h3">See total cost</span><span class="help" style="color:#2B3A45">Interest, fees and penalties in plain words, before you spend.</span></div>
+          <div class="hiwc" style="margin-top:40px"><span class="hiwn">4</span><span class="h3">Spend it</span><span class="help" style="color:#2B3A45">Discounts on food, clothes and the categories you choose.</span></div>
+          <div class="hiwc" style="margin-top:20px"><span class="hiwn">5</span><span class="h3">Repay on time</span><span class="help" style="color:#2B3A45">On-time repayment is reported to credit bureaus.</span></div>
+          <div class="hiwc"><span class="hiwn">6</span><span class="h3">View score and new limit</span><span class="help" style="color:#2B3A45">Your credit score and your limit update.</span></div>
+        </div>
+      </div>
+      <div class="grid2e" style="padding-top:12px">
+        <div class="card">
+          <span class="h3">What is in this MVP</span>
+          <div>
+            <div class="exr"><span class="exk">One starter line</span><span class="exv">A single refundable deposit and one small credit line from one partner lender. Ascend does not lend.</span></div>
+            <div class="exr"><span class="exk">Two-factor check</span><span class="exv">Intent from your deposit, capability from consented inflow totals and your college ID. No credit score needed.</span></div>
+            <div class="exr"><span class="exk">Limit cap</span><span class="exv">1.5 times your deposit to start, within what your inflow can carry. It grows only as you repay on time.</span></div>
+            <div class="exr"><span class="exk">Total cost first</span><span class="exv">Interest, fees and penalties in plain words before you spend. No hidden charges.</span></div>
+            <div class="exr"><span class="exk">Offers you choose</span><span class="exv">Discounts only on the categories you pick. A weekly spend spike locks growth and shows a soft reminder.</span></div>
+            <div class="exr"><span class="exk">Safety checks</span><span class="exv">Inflow check every 2 to 3 months. A grace period and a free date shift before any step-down.</span></div>
+            <div class="exr"><span class="exk">Builds your record</span><span class="exv">On-time repayments are reported to credit bureaus. Your score and limit update.</span></div>
+          </div>
+          <p class="help">All figures, such as the 1.5 times limit, are illustrative. The real numbers are set with the lending partner.</p>
+        </div>
+        <div class="card">
+          <span class="h3">What we left out, maybe for later</span>
+          <div>
+            <div class="exr"><span class="exk">Many banks</span><span class="exv">One partner at the start. We add more once the first works.</span></div>
+            <div class="exr"><span class="exk">Choice of card</span><span class="exv">You get one card, so there is no question of which is best for a purchase.</span></div>
+            <div class="exr"><span class="exk">Bigger limits</span><span class="exv">Left out at the beginning.</span></div>
+            <div class="exr"><span class="exk">Big rewards</span><span class="exv">Offers like "spend 5,000, get 500 off" push people to spend more than they need. They can come later.</span></div>
+            <div class="exr"><span class="exk">Custom videos</span><span class="exv">Short videos come after we see which topics users actually need. For now, short tips.</span></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 2 CONSENT -->
+    <sc-if value="{{ isConsent }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">You choose what we use</h1>
+        <p class="lead">Each item has one purpose. You can withdraw any of them later, and delete your data.</p>
+      </div>
+      <div class="grid2">
+        <div class="grid2e">
+          <sc-for list="{{ consentItems }}" as="c" hint-placeholder-count="4">
+            <div class="card" style="gap:10px">
+              <div class="spread">
+                <span class="h3">{{ c.title }}</span>
+                <button class="tog {{ c.cls }}" role="switch" aria-label="{{ c.title }}" aria-checked="{{ c.on }}" onClick="{{ c.toggle }}"></button>
+              </div>
+              <span class="pill {{ c.pillCls }}" style="align-self:flex-start">{{ c.pill }}</span>
+              <p class="body">{{ c.purpose }}</p>
+              <sc-if value="{{ c.on }}" hint-placeholder-val="{{ false }}"><p class="help" style="color:#1F7A4D">{{ c.at }}</p></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div class="stack">
+          <div class="card dark">
+            <div class="spread">
+              <span class="h3" style="color:#fff">Never accessed</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>
+            </div>
+            <p class="body" style="color:#D5DEE4">Your contacts, photos and messages. There is no switch because there is no access.</p>
+          </div>
+          <div class="card">
+            <button class="btn pri wide" disabled="{{ consentOff }}" onClick="{{ toInflow }}">Agree and continue</button>
+            <button class="btn sec wide" onClick="{{ toWelcome }}">Not now</button>
+            <p class="help">Turn on the four required items to continue.</p>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 3 VERIFY -->
+    <sc-if value="{{ isInflow }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Show us you can repay</h1>
+        <p class="lead">Tell us what you do and what comes in each month. We then check it against your bank statements, with your consent.</p>
+      </div>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card">
+            <span class="h3">About you</span>
+            <div class="field">
+              <span class="lbl">What do you do?</span>
+              <div class="seg" style="flex-wrap:wrap">
+                <sc-for list="{{ profChips }}" as="pc" hint-placeholder-count="4">
+                  <button class="segb {{ pc.cls }}" onClick="{{ pc.pick }}">{{ pc.label }}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{ profBlock }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>Ascend is for college students in this first launch. We will let you know when we open to others.</span></div></sc-if>
+            </div>
+            <div class="cols">
+              <div class="col">
+                <label class="lbl" for="fam">Family support a month</label>
+                <div class="pre"><div class="prefix">₹</div><input id="fam" class="in" inputmode="numeric" value="{{ famVal }}" onChange="{{ onFam }}"></div>
+              </div>
+              <div class="col">
+                <label class="lbl" for="own">Your own earnings a month</label>
+                <div class="pre"><div class="prefix">₹</div><input id="own" class="in" inputmode="numeric" value="{{ ownVal }}" onChange="{{ onOwn }}"></div>
+              </div>
+            </div>
+            <div class="spread"><span class="kvk">You told us</span><span class="fig sm">{{ declStr }} <span class="help">a month</span></span></div>
+            <p class="help">Freelance or part-time earnings can be irregular. Give your usual month. Your bank statements below confirm it.</p>
+          </div>
+          <div class="card">
+            <div class="spread"><span class="h3">Your inflow, last six months</span><span class="pill neu">Sandbox bank data</span></div>
+            <div class="bars">
+              <div class="barrow">
+                <sc-for list="{{ bars }}" as="b" hint-placeholder-count="6">
+                  <div class="barcol"><span class="bartxt" style="font-weight:600;color:#12202A">{{ b.v }}</span><div class="bar" style="height:{{ b.h }}px"></div><span class="bartxt">{{ b.m }}</span></div>
+                </sc-for>
+              </div>
+              <div class="avgline" style="bottom:{{ avgBottom }}px"></div>
+            </div>
+            <div class="spread"><span class="kvk">Average in your bank statements</span><span class="fig sm">{{ bankAvgStr }} <span class="help">a month</span></span></div>
+            <div class="sep"></div>
+            <div class="spread"><span class="kvk"><b>We use</b> the lower of what you told us and what the statements show</span><span class="fig">{{ avgStr }} <span class="help">a month</span></span></div>
+            <button class="link" onClick="{{ whyAvg }}">Why this number?</button>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <span class="h3">Demo only: pick a sandbox bank profile</span>
+            <sc-for list="{{ profiles }}" as="p" hint-placeholder-count="4">
+              <button class="opt {{ p.cls }}" onClick="{{ p.pick }}"><span style="display:flex;flex-direction:column"><span>{{ p.label }}</span><span class="help">Average {{ p.avg }} a month</span></span><span class="rad"></span></button>
+            </sc-for>
+          </div>
+          <div class="card">
+            <span class="lbl">College ID and age</span>
+            <p class="help">You confirm your date of birth and college ID with DigiLocker on the next step, when you put in your deposit.</p>
+            <div class="ban info"><span>We store only these six monthly totals. No shop names, no people, no messages.</span></div>
+            <sc-if value="{{ lowInc }}" hint-placeholder-val="{{ false }}">
+              <div class="ban warn"><span>The inflow we can use is {{ avgStr }} a month. We start at ₹4,000. You can come back when your inflow grows.</span></div>
+            </sc-if>
+            <button class="btn pri wide" disabled="{{ underMin }}" onClick="{{ toDeposit }}">Continue to your deposit</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 4 DEPOSIT -->
+    <sc-if value="{{ isDeposit }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Put in a refundable deposit</h1>
+        <p class="lead">Your deposit shows you mean to repay. Your inflow shows you can. Together they set your starting limit.</p>
+      </div>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card">
+            <span class="h3">Two signals, one decision</span>
+            <div class="cols">
+              <div class="sig {{ sigDepCls }}"><span class="help">Intent</span><span class="h3">Your deposit</span><span class="pill {{ depPill }}" style="align-self:flex-start">{{ depPillText }}</span></div>
+              <div class="sig ok"><span class="help">Capability</span><span class="h3">Your inflow</span><span class="pill ok" style="align-self:flex-start">{{ avgStr }} a month</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="spread"><span class="h3">Verify it is you</span><sc-if value="{{ verifiedAll }}" hint-placeholder-val="{{ false }}"><span class="pill ok">Verified</span></sc-if></div>
+            <p class="body">Before money goes in, we check your age and that you are a college student. This is the identity step of the bank's KYC.</p>
+            <div class="cols">
+              <div class="col">
+                <label class="lbl" for="dob">Date of birth</label>
+                <input id="dob" class="in {{ dobCls }}" placeholder="dd/mm/yyyy" value="{{ dob }}" onChange="{{ onDob }}" disabled="{{ depLocked }}">
+              </div>
+              <div class="col">
+                <label class="lbl" for="enrol">College enrolment ID</label>
+                <input id="enrol" class="in {{ enrolCls }}" value="{{ enrol }}" onChange="{{ onEnrol }}" disabled="{{ depLocked }}">
+              </div>
+            </div>
+            <sc-if value="{{ enrolBad }}" hint-placeholder-val="{{ false }}"><p class="help" style="color:#B3261E">We could not find this ID for the Hyderabad cluster. Check the number on your college ID card.</p></sc-if>
+            <sc-if value="{{ underage }}" hint-placeholder-val="{{ false }}">
+              <div class="ban bad"><span><b>Ascend is for people 18 and over.</b> We cannot open an account for you yet, and there is no way around this. You can come back on your 18th birthday.</span></div>
+            </sc-if>
+            <sc-if value="{{ oddAge }}" hint-placeholder-val="{{ false }}">
+              <div class="ban warn"><span>This date of birth is unusual for a college student. Your application goes to manual review, so it will take longer.</span></div>
+            </sc-if>
+            <sc-if value="{{ showDl }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ dlTodo }}" hint-placeholder-val="{{ true }}">
+                <button class="btn sec wide" onClick="{{ doDl }}">Verify age with DigiLocker</button>
+                <p class="help">Demo screen. DigiLocker confirms an age band only. We never see or store your Aadhaar number.</p>
+              </sc-if>
+              <sc-if value="{{ dlDone }}" hint-placeholder-val="{{ false }}">
+                <div class="spread"><span class="body">DigiLocker: aged 18 to 24. Student profile on record.</span><span class="pill ok">Age verified</span></div>
+                <p class="help">Date of birth is used for this age check only.</p>
+              </sc-if>
+            </sc-if>
+          </div>
+          <div class="card">
+            <span class="h3">Choose your deposit</span>
+            <div class="seg">
+              <sc-for list="{{ depChips }}" as="dc" hint-placeholder-count="3">
+                <button class="segb {{ dc.cls }}" disabled="{{ depLocked }}" onClick="{{ dc.pick }}">{{ dc.label }}</button>
+              </sc-for>
+            </div>
+            <p class="help">Smaller deposits give smaller limits. For example, ₹5,000 is what a typical student starts with.</p>
+            <div class="ban info">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 018 0v3"></path></svg>
+              <span>The partner bank holds your deposit in your name. Ascend never touches it. You can withdraw it once your draw is repaid. Simulated in this prototype.</span>
+            </div>
+          </div>
+        </div>
+        <div class="card tint">
+          <span class="lbl">Your starting limit</span>
+          <span class="disp">{{ limitPreview }}</span>
+          <p class="body">1.5 times your {{ depStr }} deposit. You can use all of it, in one spend or many.</p>
+          <sc-if value="{{ underMin }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>Your average inflow is below ₹4,000 a month, so a limit is not available yet.</span></div></sc-if>
+          <sc-if value="{{ depLocked }}" hint-placeholder-val="{{ false }}">
+            <div class="ban ok"><span>{{ depStr }} locked with the partner bank.</span></div>
+            <button class="btn pri wide" onClick="{{ toOffer }}">See my limit</button>
+          </sc-if>
+          <sc-if value="{{ depOpen }}" hint-placeholder-val="{{ true }}">
+            <button class="btn pri wide" disabled="{{ lockOff }}" onClick="{{ lockDeposit }}">Lock {{ depStr }} deposit</button>
+            <sc-if value="{{ notVerified }}" hint-placeholder-val="{{ true }}"><p class="help">Verify your age and college first to lock your deposit.</p></sc-if>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 5 LIMIT -->
+    <sc-if value="{{ isOffer }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Your starting limit</h1>
+        <p class="lead">Set by the partner lender from your deposit and your inflow. It grows only when you repay on time and say yes.</p>
+      </div>
+      <sc-if value="{{ freeze }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>Limit increases are paused for now. Your current limit is not affected.</span></div></sc-if>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card">
+            <span class="lbl">Starting limit</span>
+            <span class="disp">{{ limitStr }}</span>
+            <button class="link" onClick="{{ whyLimit }}">Why this number?</button>
+            <div class="sep"></div>
+            <sc-for list="{{ reasons }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;gap:12px;align-items:flex-start">
+                <span class="dot {{ r.dot }}" style="margin-top:8px"></span>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <span class="body">{{ r.text }}</span>
+                  <sc-if value="{{ r.binds }}" hint-placeholder-val="{{ false }}"><span class="pill lap" style="align-self:flex-start">This sets your limit</span></sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}"><div class="sep"></div><p class="help" style="color:#2B3A45">{{ offerNote }}</p></sc-if>
+          </div>
+          <button class="btn pri" style="align-self:flex-start" onClick="{{ toDraw }}">Choose how much to borrow</button>
+        </div>
+        <div class="card">
+          <span class="h3">How your limit grows</span>
+          <div class="ladder">
+            <sc-for list="{{ ladder }}" as="l" hint-placeholder-count="3">
+              <div class="step {{ l.cls }}" style="height:{{ l.h }}px"><span class="sn2">{{ l.name }}</span><span class="sc">{{ l.cap }}</span><span class="sr">{{ l.rule }}</span></div>
+            </sc-for>
+          </div>
+          <p class="help">Each step is the lower of a multiple of your deposit and a share of your inflow (25%, 30%, 35%). All are assumptions to confirm with the lender.</p>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 6 DRAW -->
+    <sc-if value="{{ isDraw }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">{{ drawTitle }}</h1>
+        <p class="lead">{{ drawLead }}</p>
+      </div>
+      <sc-if value="{{ blockDeposit }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>Put in a deposit to get a limit. <button class="link" onClick="{{ toDeposit }}">Go to deposit</button></span></div></sc-if>
+      <sc-if value="{{ blockPaused }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>New draws are paused until your overdue amount is paid and one more repayment is on time.</span></div></sc-if>
+      <sc-if value="{{ blockNoRoom }}" hint-placeholder-val="{{ false }}"><div class="ban info"><span>Your whole limit is in use. It refills as each spend is repaid.</span></div></sc-if>
+      <sc-if value="{{ blockWithdrawn }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>You withdrew inflow consent, so new draws are off. Grant it again on the Record page to continue.</span></div></sc-if>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card">
+            <div class="spread"><span class="lbl">Amount</span><span class="help">Up to {{ maxStr }}</span></div>
+            <span class="disp">{{ amountStr }}</span>
+            <label for="amt" class="help" style="position:absolute;left:-9999px">Draw amount</label>
+            <input id="amt" class="slider" type="range" min="500" max="{{ maxAmt }}" step="100" value="{{ amountVal }}" onChange="{{ onAmount }}">
+            <p class="help">{{ limitLine }}</p>
+            <sc-if value="{{ ceilingNote }}" hint-placeholder-val="{{ false }}"><p class="help">{{ ceilingText }}</p></sc-if>
+            <sc-if value="{{ overInflow }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span><b>This is more than a month of your inflow.</b> Open spends would add up to {{ openAfterStr }}, and your inflow is {{ inflowStr }} a month. Repay by day 30 to avoid interest and the late fee.</span></div></sc-if>
+          </div>
+          <div class="ban warn">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M12 3l10 18H2z"></path><path d="M12 10v5M12 18v.5"></path></svg>
+            <span><b>{{ missHead }}</b> {{ missText }}</span>
+          </div>
+          <div class="card">
+            <span class="h3">{{ exTitle }}</span>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ exRows }}" as="ex" hint-placeholder-count="2">
+                <div class="exr"><span class="exk">{{ ex.k }}</span><span class="exv">{{ ex.v }}</span></div>
+              </sc-for>
+            </div>
+            <div class="ban warn"><span><b>{{ exWorst }}</b></span></div>
+          </div>
+          <div class="card">
+            <span class="h3">Every charge, in plain words</span>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ chargeRows }}" as="cr" hint-placeholder-count="10">
+                <div class="crow"><span class="ck">{{ cr.k }}</span><span class="cv">{{ cr.v }}</span></div>
+              </sc-for>
+            </div>
+            <p class="help">Rates and fees are illustrative. Your lending partner sets the real ones. Assumed.</p>
+            <p class="help">Ascend does not earn from the late fee. The ₹50 is there to nudge on-time repayment, and it goes to the lender.</p>
+          </div>
+          <div class="card">
+            <span class="h3">Key facts</span>
+            <p class="body"><b>Rate:</b> 18% a year. Assumed; your lender sets the final rate.</p>
+            <p class="body"><b>Cooling-off:</b> cancel within 3 days by repaying what you took plus the interest so far. Assumed; the lender sets the real period.</p>
+            <p class="body"><b>Credit bureaus:</b> your lender reports every repayment. On-time payments build your score. Missed ones lower it.</p>
+            <button class="link" onClick="{{ learnCost }}">What this does to your score</button>
+          </div>
+        </div>
+        <div class="card tint" style="position:sticky;top:0">
+          <span class="h3">Cost sheet</span>
+          <div class="kv"><span class="kvk">{{ payLabel }}</span><span class="fig">{{ monthlyStr }}</span></div>
+          <div class="sep"></div>
+          <div class="kv"><span class="kvk">Total you pay back</span><span class="kvv">{{ totalStr }}</span></div>
+          <div class="kv"><span class="kvk">Interest</span><span class="kvv">{{ interestStr }}</span></div>
+          <div class="kv"><span class="kvk">Fees</span><span class="kvv">₹0</span></div>
+          <p class="help" style="color:#2B3A45">{{ rateNote }}</p>
+          <button class="link" onClick="{{ whyCost }}">Why this number?</button>
+          <div class="sep"></div>
+          <button class="ack" onClick="{{ toggleAck }}">
+            <span class="box {{ ackCls }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="{{ ackShow }}"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+            <span>I have read the full cost and I understand repayments are reported to credit bureaus.</span>
+          </button>
+          <button class="btn pri wide" disabled="{{ confirmOff }}" onClick="{{ confirmDraw }}">Confirm {{ amountStr }}</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 7 MONEY PATH -->
+    <sc-if value="{{ isMoney }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">{{ moneyTitle }}</h1>
+        <p class="lead">The money goes from the partner lender straight to your own bank account. It never passes through Ascend.</p>
+      </div>
+      <div class="card">
+        <div class="mp">
+          <div class="node {{ nodeA }}"><span class="h3">Partner lender</span><span class="help">Sandbox</span></div>
+          <div class="arr {{ arrA }}"></div>
+          <div class="node {{ nodeB }}"><span class="h3">Your bank account</span><span class="help">Ending 4821</span></div>
+        </div>
+        <div class="ascnode">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#12202A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="9"></circle><path d="M6 18L18 6"></path></svg>
+          <span><b>Ascend does not hold your money.</b> It stays outside this path.</span>
+        </div>
+        <span class="pill {{ moneyPill }}" style="align-self:flex-start">{{ moneyStatus }}</span>
+      </div>
+      <sc-if value="{{ loanWindow }}" hint-placeholder-val="{{ false }}">
+        <div class="card">
+          <span class="h3">Repay within 30 days and pay ₹0 extra</span>
+          <p class="body">Your repayment of <b>{{ firstAmt }}</b> is due on <b>{{ firstDate }}</b>, 30 days after you draw. Repay in full by then and you pay nothing more. Autopay takes it from your account, and you can cancel autopay any time in your bank app.</p>
+          <p class="help">If you cannot repay in full: 1.5% a month on what is unpaid, plus a ₹50 late fee once. You get reminders 7 days, 3 days and 1 day before the due date.</p>
+        </div>
+      </sc-if>
+      <button class="btn pri" style="align-self:flex-start" disabled="{{ moneyOff }}" onClick="{{ toSpend }}">Spend it</button>
+    </sc-if>
+
+    <!-- 8 SPEND -->
+    <sc-if value="{{ isSpend }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Spend it your way</h1>
+        <p class="lead">Pick the categories you actually shop in. Partner discounts apply when you pay by UPI.</p>
+      </div>
+      <sc-if value="{{ blockDeposit }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>Your deposit was withdrawn. Put in a deposit to get a limit again. <button class="link" onClick="{{ toDeposit }}">Go to deposit</button></span></div></sc-if>
+      <sc-if value="{{ noBalance }}" hint-placeholder-val="{{ false }}">
+        <div class="card"><span class="h3">Nothing to spend yet</span><p class="body">Take a draw first. It lands in your own bank account.</p><button class="btn pri" style="align-self:flex-start" onClick="{{ toDraw }}">Choose how much to borrow</button></div>
+      </sc-if>
+      <sc-if value="{{ hasBalance }}" hint-placeholder-val="{{ true }}">
+        <div class="grid2">
+          <div class="stack">
+            <div class="card">
+              <span class="h3">Your categories</span>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <sc-for list="{{ cats }}" as="ct" hint-placeholder-count="5">
+                  <button class="cat {{ ct.cls }}" onClick="{{ ct.pick }}">{{ ct.label }}</button>
+                </sc-for>
+              </div>
+              <div class="grid3">
+                <sc-for list="{{ offers }}" as="of" hint-placeholder-count="2">
+                  <div class="offer"><span class="offern">{{ of.disc }}</span><span class="h3">{{ of.label }}</span><span class="help">{{ of.text }}</span></div>
+                </sc-for>
+              </div>
+              <p class="help">Sample partner offers. Rates are assumptions to agree with partner brands.</p>
+            </div>
+            <div class="card">
+              <div class="spread"><span class="h3">Try a purchase</span><span class="help">Paid by UPI from your own account</span></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <sc-for list="{{ buys }}" as="by" hint-placeholder-count="6">
+                  <button class="btn sec sm" onClick="{{ by.go }}">{{ by.text }}</button>
+                </sc-for>
+              </div>
+              <sc-if value="{{ hasPurchases }}" hint-placeholder-val="{{ false }}">
+                <div class="timeline">
+                  <sc-for list="{{ purchaseList }}" as="pu" hint-placeholder-count="3">
+                    <div class="trow"><span class="dot ok"></span><span class="body" style="flex:1">{{ pu.text }}</span><span class="help">{{ pu.when }}</span></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div class="stack">
+            <div class="card tint">
+              <span class="lbl">Available to spend</span>
+              <span class="disp" style="font-size:52px">{{ balanceStr }}</span>
+              <p class="help" style="color:#2B3A45">In your own bank account. Saved so far with discounts: {{ savedStr }}.</p>
+            </div>
+            <div class="card">
+              <span class="h3">This week's spending</span>
+              <div class="track"><div class="fillb" style="width:{{ weekW }}%;background:{{ weekColor }}"></div></div>
+              <div class="spread"><span class="kvk">{{ weekStr }} this week</span><span class="help">Growth pauses above {{ thrStr }}</span></div>
+              <p class="help">If your spending jumps in a week, we pause limit growth and send you a gentle note. It reopens when spending settles.</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- 9 HOME -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
+      <div class="spread">
+        <div style="display:flex;flex-direction:column;gap:6px"><h1 class="h1">Hi {{ userName }}</h1><p class="lead">Here is where you stand on the way to your next limit.</p></div>
+        <button class="btn pri" onClick="{{ toSpend }}">Spend it</button>
+      </div>
+      <sc-if value="{{ blockPaused }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>New draws are paused until your overdue amount is paid and one more repayment is on time.</span></div></sc-if>
+      <sc-if value="{{ hasGrowth }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>{{ growthMsg }}</span></div></sc-if>
+      <sc-if value="{{ reminderOn }}" hint-placeholder-val="{{ false }}"><div class="ban info"><span>{{ reminderText }}</span></div></sc-if>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card {{ pulseCls }}">
+            <div class="spread" style="align-items:flex-end">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <span class="lbl">Progress to your next limit</span>
+                <span class="fig">{{ meterText }}</span>
+                <p class="body" style="max-width:380px">{{ meterCap }}</p>
+                <div style="display:flex;gap:16px"><button class="link" onClick="{{ toScore }}">View score and new limit</button><button class="link" onClick="{{ openTier }}">How limits grow</button></div>
+              </div>
+              <div class="meter">
+                <sc-for list="{{ meter }}" as="m" hint-placeholder-count="3">
+                  <div class="mb" style="height:{{ m.h }}px;background:{{ m.c }}"></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ stepUpReady }}" hint-placeholder-val="{{ false }}">
+            <div class="card tint">
+              <span class="h3">You paid {{ streak }} on time in a row</span>
+              <p class="body">You can move to a {{ nextLimitStr }} limit. It only changes if you accept.</p>
+              <button class="btn pri" style="align-self:flex-start" onClick="{{ toScore }}">View score and new limit</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ true }}">
+            <div class="card">
+              <div class="spread"><span class="lbl">Your open spends</span><span class="help">{{ limitUse }}</span></div>
+              <div class="track"><div class="fillb" style="width:{{ usePct }}%;background:#0E7C86"></div></div>
+              <div class="timeline">
+                <sc-for list="{{ spends }}" as="sp" hint-placeholder-count="2">
+                  <div class="trow"><span class="dot {{ sp.dot }}"></span><span class="body" style="flex:1">{{ sp.text }}</span><button class="btn sec sm" onClick="{{ sp.pay }}">Pay now</button></div>
+                </sc-for>
+              </div>
+              <p class="help">Each spend is repaid in full 30 days after you draw, by autopay from your account ending 4821. Repaying frees that part of your limit.</p>
+              <button class="btn sec sm" style="align-self:flex-start" onClick="{{ toRepay }}">Change a date</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ noNext }}" hint-placeholder-val="{{ false }}">
+            <div class="card">
+              <span class="h3">No open spends</span>
+              <p class="body">Your whole limit of {{ limitStr }} is available.</p>
+              <button class="btn pri" style="align-self:flex-start" onClick="{{ toDraw }}">Choose how much to borrow</button>
+            </div>
+          </sc-if>
+          <div class="card">
+            <span class="h3">Recent activity</span>
+            <div class="timeline">
+              <sc-for list="{{ activity }}" as="a" hint-placeholder-count="3">
+                <div class="trow"><span class="dot {{ a.cls }}"></span><span class="body" style="flex:1">{{ a.text }}</span><span class="help">{{ a.when }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div class="stack">
+          <sc-if value="{{ showTip }}" hint-placeholder-val="{{ true }}">
+            <div class="card dark">
+              <span class="h3" style="color:#fff">Did you know?</span>
+              <p class="body" style="color:#D5DEE4">{{ tipText }}</p>
+              <button class="link" style="color:#8FD3DA" onClick="{{ dismissTip }}">Got it</button>
+            </div>
+          </sc-if>
+          <div class="card">
+            <div class="spread"><span class="h3">Inflow check-in</span><span class="pill {{ checkCls }}">{{ checkPill }}</span></div>
+            <p class="body">We look at your inflow every 2 to 3 months. Next check: {{ nextCheck }}.</p>
+            <p class="help">If your inflow drops, limit growth is frozen until it recovers. Your current limit does not change.</p>
+          </div>
+          <div class="card">
+            <span class="h3">Reminders before each due date</span>
+            <p class="body">7 days, 3 days and 1 day before each 30-day due date.</p>
+          </div>
+          <div class="card">
+            <div class="spread">
+              <span class="lbl" style="flex:1">Share my progress with a parent or guardian</span>
+              <button class="tog {{ sponsorCls }}" role="switch" aria-label="Share progress" aria-checked="{{ sponsor }}" onClick="{{ toggleSponsor }}"></button>
+            </div>
+            <p class="help">They see your limit step and on-time count only. Never what you spend. Manage it on the Record and privacy page.</p>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 10 REPAY OR SLIP -->
+    <sc-if value="{{ isRepay }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">{{ repayTitle }}</h1>
+        <p class="lead">{{ repayLead }}</p>
+      </div>
+      <sc-if value="{{ reminderOn }}" hint-placeholder-val="{{ false }}"><div class="ban info"><span>{{ reminderText }}</span></div></sc-if>
+      <sc-if value="{{ hasOverdue }}" hint-placeholder-val="{{ false }}">
+        <div class="ban warn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+          <span>Your {{ overdueDate }} payment of {{ overdueAmt }} was not paid. {{ overdueCost }}</span>
+        </div>
+      </sc-if>
+      <div class="grid2">
+        <div class="stack">
+          <sc-if value="{{ hasStepDown }}" hint-placeholder-val="{{ false }}">
+            <div class="card" style="border:2px solid #B7791F">
+              <span class="h3">{{ stepTitle }}</span>
+              <p class="body">{{ stepBody }}</p>
+              <p class="body"><b>How to get back:</b> pay the overdue amount, then pay one more repayment on time. Draws then reopen.</p>
+            </div>
+          </sc-if>
+          <sc-if value="{{ hasOverdue }}" hint-placeholder-val="{{ false }}">
+            <div class="card">
+              <span class="h3">Your options</span>
+              <sc-if value="{{ canShift }}" hint-placeholder-val="{{ false }}">
+                <div class="field">
+                  <span class="lbl">Free date shift</span>
+                  <p class="help" style="color:#2B3A45">Move this due date by up to 7 days, once for this spend. No charge.</p>
+                  <div style="display:flex;gap:8px">
+                    <sc-for list="{{ shiftChips }}" as="sc" hint-placeholder-count="7">
+                      <button class="dk {{ sc.cls }}" style="height:40px;width:48px;color:#12202A;border-color:#C4CED6;background:#fff" onClick="{{ sc.pick }}">+{{ sc.d }}</button>
+                    </sc-for>
+                  </div>
+                  <button class="btn sec" style="align-self:flex-start" onClick="{{ doShift }}">Shift my date by {{ shiftDays }} days</button>
+                </div>
+                <div class="sep"></div>
+              </sc-if>
+              <sc-if value="{{ shiftDone }}" hint-placeholder-val="{{ false }}"><p class="help" style="color:#2B3A45">Free date shift: used for this spend.</p></sc-if>
+              <button class="btn pri" style="align-self:flex-start" onClick="{{ payNow }}">Pay {{ overdueAmt }} now</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ onTrack }}" hint-placeholder-val="{{ true }}">
+            <div class="card">
+              <sc-if value="{{ hasNext }}" hint-placeholder-val="{{ true }}">
+                <span class="fig">{{ nextAmt }}</span>
+                <span class="body">due {{ nextDate }}, by autopay</span>
+                <div class="timeline">
+                  <sc-for list="{{ spends }}" as="sp" hint-placeholder-count="2">
+                    <div class="trow"><span class="dot {{ sp.dot }}"></span><span class="body" style="flex:1">{{ sp.text }}</span></div>
+                  </sc-for>
+                </div>
+                <div style="display:flex;gap:10px"><button class="btn pri" onClick="{{ payNow }}">Pay now</button><button class="btn sec" onClick="{{ toRecord }}">See my full record</button></div>
+              </sc-if>
+              <sc-if value="{{ noNext }}" hint-placeholder-val="{{ false }}">
+                <span class="h3">Nothing is due</span>
+                <p class="body">Your draw is repaid. Your record is up to date.</p>
+              </sc-if>
+            </div>
+          </sc-if>
+          <sc-if value="{{ recoveryOn }}" hint-placeholder-val="{{ false }}"><div class="ban ok"><span>Overdue paid. One more on-time repayment reopens draws.</span></div></sc-if>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <span class="h3">How a slip is handled</span>
+            <div class="timeline">
+              <div class="trow"><span class="dot"></span><span class="body">Reminders at 7 days, 3 days and 1 day before the due date.</span></div>
+              <div class="trow"><span class="dot warn"></span><span class="body">Repayment missed: one free date shift of up to 7 days.</span></div>
+              <div class="trow"><span class="dot warn"></span><span class="body">Shift used, or the window passes unpaid: new draws pause and your limit steps down one, with the reason shown.</span></div>
+              <div class="trow"><span class="dot ok"></span><span class="body">Pay the overdue amount and one more repayment on time: draws reopen.</span></div>
+            </div>
+          </div>
+          <div class="ban info"><span>We only contact you. We never contact your family, friends or contacts, and we never name you anywhere.</span></div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 11 SCORE AND LIMIT -->
+    <sc-if value="{{ isScore }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Your score and limit</h1>
+        <p class="lead">Every on-time repayment is reported to credit bureaus. This is how it adds up.</p>
+      </div>
+      <sc-if value="{{ hasGrowth }}" hint-placeholder-val="{{ false }}"><div class="ban warn"><span>{{ growthMsg }}</span></div></sc-if>
+      <div class="grid2e">
+        <div class="card">
+          <span class="h3">Your credit record</span>
+          <div class="spread" style="align-items:flex-end">
+            <div style="display:flex;flex-direction:column;gap:6px"><span class="help">Where you are</span><span class="fig">{{ bandName }}</span></div>
+            <div class="meter" style="height:84px">
+              <sc-for list="{{ bandBars }}" as="bb" hint-placeholder-count="4">
+                <div class="mb" style="width:44px;height:{{ bb.h }}px;background:{{ bb.c }}"></div>
+              </sc-for>
+            </div>
+          </div>
+          <p class="body">{{ bandNote }}</p>
+          <p class="help">Illustrative, not a bureau score. Your lender reports the real one.</p>
+          <button class="link" onClick="{{ learnCost }}">What this does to your score</button>
+        </div>
+        <div class="card">
+          <span class="h3">Your limit</span>
+          <div class="spread"><span class="kvk">Current limit</span><span class="fig">{{ limitStr }}</span></div>
+          <sc-if value="{{ stepUpReady }}" hint-placeholder-val="{{ false }}">
+            <div class="sep"></div>
+            <div class="spread"><span class="kvk">New limit on offer</span><span class="fig" style="color:#0E7C86">{{ nextLimitStr }}</span></div>
+            <p class="body">You paid {{ streak }} repayments on time in a row. The new limit only starts if you accept.</p>
+            <button class="btn pri" disabled="{{ growthLocked }}" onClick="{{ acceptUp }}">Accept {{ nextLimitStr }} limit</button>
+          </sc-if>
+          <sc-if value="{{ inflowCapped }}" hint-placeholder-val="{{ false }}"><p class="body">Your inflow holds your limit at {{ limitStr }}. It can grow when your inflow grows.</p></sc-if>
+          <sc-if value="{{ notYet }}" hint-placeholder-val="{{ true }}"><p class="body">{{ remainText }}</p></sc-if>
+        </div>
+      </div>
+      <sc-if value="{{ noScore }}" hint-placeholder-val="{{ false }}">
+        <div class="card"><span class="h3">How your score is built</span><p class="body">No score yet. Your first on-time repayment starts your record, and this page then shows how it compares with a bureau score.</p></div>
+      </sc-if>
+      <sc-if value="{{ hasScore }}" hint-placeholder-val="{{ true }}">
+        <div class="card">
+          <div class="spread" style="align-items:flex-start;gap:32px">
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:260px">
+              <span class="lbl">Ascend index, illustrative</span>
+              <span class="disp">{{ scoreStr }} <span class="help">out of 900</span></span>
+              <span class="pill ok" style="align-self:flex-start">Like a CIBIL {{ cibName }}</span>
+              <p class="help" style="color:#2B3A45">When your lender reports, expect a first bureau score of roughly {{ estRange }}.</p>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:6px">
+              <div style="position:relative;height:56px">
+                <div style="position:absolute;left:0;right:0;top:26px;height:16px;border-radius:999px;overflow:hidden;display:flex">
+                  <div style="width:41.67%;background:#E8B5B1"></div><div style="width:16.67%;background:#EBCF9A"></div><div style="width:16.67%;background:#9FD0D5"></div><div style="width:25%;background:#9CCDB3"></div>
+                </div>
+                <div style="position:absolute;top:0;left:{{ gaugePos }}%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px">
+                  <span style="font:700 14px 'Instrument Sans',system-ui,sans-serif;background:#12202A;color:#fff;border-radius:8px;padding:2px 8px">{{ scoreStr }}</span>
+                  <span style="width:3px;height:30px;background:#12202A;border-radius:2px"></span>
+                </div>
+              </div>
+              <div style="display:flex;font:600 12.5px 'Instrument Sans',system-ui,sans-serif;color:#2B3A45">
+                <span style="width:41.67%">Poor 300 to 549</span><span style="width:16.67%">Fair 550 to 649</span><span style="width:16.67%">Good 650 to 749</span><span style="width:25%">Excellent 750 to 900</span>
+              </div>
+            </div>
+          </div>
+          <sc-if value="{{ hasGain }}" hint-placeholder-val="{{ true }}"><div class="ban info"><span>{{ gainText }}</span></div></sc-if>
+        </div>
+        <div class="grid2e">
+          <div class="card">
+            <span class="h3">What makes up the number</span>
+            <p class="help">The five factors bureaus are commonly said to weigh, with their usual weights. Points are out of 600 above the 300 floor.</p>
+            <sc-for list="{{ factors }}" as="f" hint-placeholder-count="5">
+              <div style="display:flex;flex-direction:column;gap:6px;padding:8px 0;border-top:1px solid #E6EBEF">
+                <div class="spread"><span class="body"><b>{{ f.name }}</b> <span class="help">weight {{ f.weight }}</span></span><span class="body"><b>{{ f.pts }}</b></span></div>
+                <div class="lim"><div style="width:{{ f.w }}%"></div></div>
+                <div class="spread"><span class="help" style="color:#2B3A45">{{ f.what }}</span><span class="pill {{ f.anCls }}">{{ f.an }}</span></div>
+              </div>
+            </sc-for>
+            <p class="help">The pill shows how closely each Ascend signal matches what a bureau sees.</p>
+          </div>
+          <div class="stack">
+            <div class="card">
+              <span class="h3">Where on-time repayments take you</span>
+              <p class="help">Score after each on-time repayment, if you keep use of your limit under 30%. Your position is outlined.</p>
+              <div style="display:flex;align-items:flex-end;gap:10px;height:190px;padding-top:12px">
+                <sc-for list="{{ traj }}" as="t" hint-placeholder-count="8">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px">
+                    <span class="help" style="color:#12202A;font-weight:600">{{ t.v }}</span>
+                    <div style="width:100%;border-radius:8px 8px 2px 2px;{{ t.st }}"></div>
+                    <span class="help">{{ t.n }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <span class="help" style="text-align:center">On-time repayments in a row</span>
+            </div>
+            <div class="card">
+              <span class="h3">How close is this to CIBIL?</span>
+              <div style="display:flex;height:16px;border-radius:999px;overflow:hidden">
+                <div style="width:75%;background:#0E7C86"></div><div style="width:15%;background:#EBCF9A"></div><div style="width:10%;background:#DDE3E8"></div>
+              </div>
+              <p class="body"><b>About 75%</b> of the weight comes from signals Ascend shows directly: payment history, use of your limit and new enquiries. Another 15% (length of history) fills in with time. The last 10% (credit mix) Ascend barely moves.</p>
+              <p class="help">The bureau's exact formula is not public, and weights vary by source. This is an approximate guide, not a bureau score. Your lender reports the real one.</p>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- 12 RECORD -->
+    <sc-if value="{{ isRecord }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h1 class="h1">Record and privacy</h1>
+        <p class="lead">Your repayment record, your deposit and your data rights, in one place.</p>
+      </div>
+      <div class="grid2">
+        <div class="stack">
+          <div class="card">
+            <div class="cols">
+              <div class="col"><span class="help">Limit</span><span class="fig sm">{{ limitStr }}</span></div>
+              <div class="col"><span class="help">On time</span><span class="fig sm">{{ onTimeCount }}</span></div>
+              <div class="col"><span class="help">Streak</span><span class="fig sm">{{ streak }}</span></div>
+            </div>
+            <p class="help">Reported by your lender to credit bureaus.</p>
+          </div>
+          <div class="card">
+            <span class="h3">Repayments</span>
+            <sc-if value="{{ noInst }}" hint-placeholder-val="{{ false }}"><p class="body">Your record starts with your first repayment.</p></sc-if>
+            <div class="timeline">
+              <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="3">
+                <div class="trow"><span class="dot {{ t.dot }}"></span><div style="flex:1;display:flex;flex-direction:column"><span class="body">{{ t.date }}, {{ t.amt }}</span><span class="help">{{ t.note }}</span></div><span class="pill {{ t.pill }}">{{ t.label }}</span></div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ hasLoan }}" hint-placeholder-val="{{ true }}"><div class="sep"></div><p class="help" style="color:#2B3A45">{{ receipt }}</p></sc-if>
+          </div>
+          <div class="card">
+            <span class="h3">Privacy</span>
+            <sc-for list="{{ privacy }}" as="pv" hint-placeholder-count="4">
+              <div class="spread"><div style="display:flex;flex-direction:column"><span class="body">{{ pv.title }}</span><span class="help">{{ pv.state }}</span></div><button class="btn sec sm" onClick="{{ pv.act }}">{{ pv.btn }}</button></div>
+            </sc-for>
+          </div>
+        </div>
+        <div class="stack">
+          <div class="card tint">
+            <span class="h3">Your deposit</span>
+            <sc-if value="{{ depLocked }}" hint-placeholder-val="{{ true }}">
+              <span class="fig">{{ depStr }}</span>
+              <p class="body">Held by the partner bank in your name. Simulated here.</p>
+              <button class="btn sec" disabled="{{ withdrawOff }}" onClick="{{ withdrawDeposit }}">Withdraw deposit</button>
+              <p class="help">{{ withdrawNote }}</p>
+            </sc-if>
+            <sc-if value="{{ depOpen }}" hint-placeholder-val="{{ false }}"><p class="body">No deposit is held right now.</p><button class="btn pri" onClick="{{ toDeposit }}">Put in a deposit</button></sc-if>
+          </div>
+          <div class="card">
+            <span class="h3">Your record is yours</span>
+            <p class="body">Take it with you.</p>
+            <div style="display:flex;gap:10px"><button class="btn sec sm" onClick="{{ openCsv }}">Download PDF</button><button class="btn sec sm" onClick="{{ openCsv }}">Data file (CSV)</button></div>
+          </div>
+          <div class="card">
+            <div class="spread">
+              <span class="h3">Share with a parent (optional)</span>
+              <button class="tog {{ sponsorCls }}" role="switch" aria-label="Share with a parent" aria-checked="{{ sponsor }}" onClick="{{ toggleSponsor }}"></button>
+            </div>
+            <p class="help">Only you can turn this on, and you can turn it off at any time.</p>
+            <sc-if value="{{ spOff }}" hint-placeholder-val="{{ true }}"><p class="body">Off. Nothing is shared with anyone.</p></sc-if>
+            <sc-if value="{{ sponsor }}" hint-placeholder-val="{{ false }}">
+              <div class="field">
+                <label class="lbl" for="spn">Parent's mobile number</label>
+                <div class="pre"><div class="prefix">+91</div><input id="spn" class="in" inputmode="numeric" value="{{ spNum }}" onChange="{{ onSpNum }}" disabled="{{ spSent }}"></div>
+              </div>
+              <sc-if value="{{ spNotSent }}" hint-placeholder-val="{{ true }}"><button class="btn pri wide" disabled="{{ spBad }}" onClick="{{ sendInvite }}">Send read-only link</button></sc-if>
+              <sc-if value="{{ spSent }}" hint-placeholder-val="{{ false }}"><div class="ban ok"><span>Link sent to +91 {{ spNum }}. They see progress only.</span></div></sc-if>
+              <div class="cols">
+                <div class="col"><span class="lbl">They see</span><span class="help" style="color:#2B3A45">Limit step, on-time count, next due date</span></div>
+                <div class="col"><span class="lbl">They never see</span><span class="help" style="color:#2B3A45">What you spend, balances, bank account, messages</span></div>
+              </div>
+              <button class="link" onClick="{{ previewParent }}">Preview what they see</button>
+            </sc-if>
+            <p class="help">A parent is not a guarantor and is never charged. Ascend never contacts a parent to collect a payment.</p>
+          </div>
+          <sc-if value="{{ gradOn }}" hint-placeholder-val="{{ false }}">
+            <div class="card" style="border:2px solid #1F7A4D">
+              <div class="spread"><span class="h3">A bank can offer you more</span><span class="pill neu">Sandbox partner bank</span></div>
+              <p class="body">A partner bank can offer you a product based on this record.</p>
+              <button class="btn pri" onClick="{{ shareBank }}">Share my record with the bank</button>
+            </div>
+          </sc-if>
+          <div class="card">
+            <span class="h3">Delete everything</span>
+            <p class="help">Removes your profile, consents and inflow totals from Ascend.</p>
+            <button class="btn sec" style="border-color:#B3261E;color:#B3261E" onClick="{{ openDelete }}">Delete my data</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- 13 ABOUT -->
+    <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+      <div class="spread"><button class="link" onClick="{{ aboutBack }}">{{ aboutBackLabel }}</button></div>
+      <div style="display:flex;flex-direction:column;gap:14px;max-width:820px">
+        <span class="pill lap" style="align-self:flex-start">About Ascend</span>
+        <h1 class="h1" style="font-size:44px;line-height:1.08">A first credit record for students, built safely.</h1>
+        <p class="lead">Ascend helps college students in India start a credit history without a debt trap. A refundable deposit unlocks a small revolving line from a regulated partner lender. Every cost is shown before the student spends, and on-time repayment is reported to credit bureaus.</p>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+        <div class="kpi"><span class="kpil">Starting limit</span><span class="kpin">1.5× deposit</span><span class="help">Illustrative. Set with the lender.</span></div>
+        <div class="kpi"><span class="kpil">Interest-free window</span><span class="kpin">30 days</span><span class="help">Repay by the due date, pay ₹0 extra.</span></div>
+        <div class="kpi"><span class="kpil">Joining, annual, processing</span><span class="kpin">₹0</span><span class="help">No hidden charges.</span></div>
+        <div class="kpi"><span class="kpil">Our late fee income</span><span class="kpin">₹0</span><span class="help">The ₹50 late fee goes to the lender.</span></div>
+      </div>
+      <div class="grid2e">
+        <div class="card">
+          <span class="h3">The problem</span>
+          <p class="body"><b>No history, no credit. No credit, no history.</b> Banks reject first-time borrowers because there is nothing to score, so young adults fall back on a parent's card or on instant-loan apps that charge heavily and recover harshly.</p>
+          <p class="body">Our deck cites that 8 in 10 young applicants are rejected by traditional banks. Harassment, hidden charges and data misuse by some lending apps have also made students and their parents distrust anything that promises instant credit.</p>
+        </div>
+        <div class="card">
+          <span class="h3">Who we build for</span>
+          <p class="body"><b>Ishaan, 20, second-year engineering student in Hyderabad.</b> He gets about ₹6,000 a month from his parents and a little more, irregularly, from social-media work for small shops. He wants independence, discounts on what he already buys, and a credit score before his first job. He fears getting trapped in debt.</p>
+          <p class="body">He sits between our other two personas and leans toward neither, so he is the cleanest test of whether a structured, controlled path to credit works. We prove it with him first.</p>
+        </div>
+      </div>
+      <div class="card">
+        <span class="h3">The product in seven steps</span>
+        <div>
+            <div class="exr"><span class="exk">1. Sign up</span><span class="exv">Mobile number and one-time code. Nothing else is asked until it is needed.</span></div>
+            <div class="exr"><span class="exk">2. Deposit</span><span class="exv">Age and college are verified with DigiLocker. The student puts in a refundable deposit, for example ₹5,000, held by the partner bank in their name.</span></div>
+            <div class="exr"><span class="exk">3. Initial limit</span><span class="exv">The partner lender sets a small limit of 1.5 times the deposit. The student can use all of it, in one spend or many.</span></div>
+            <div class="exr"><span class="exk">4. See total cost</span><span class="exv">Interest, fees and penalties in plain words, with the worst case shown before the student spends.</span></div>
+            <div class="exr"><span class="exk">5. Spend it</span><span class="exv">Discounts on food, clothes and the categories the student chooses. Money goes from the lender to the student, never through Ascend.</span></div>
+            <div class="exr"><span class="exk">6. Repay on time</span><span class="exv">Each spend is due in 30 days. On-time repayment is reported to credit bureaus.</span></div>
+            <div class="exr"><span class="exk">7. View score and new limit</span><span class="exv">A credit index and a new limit are offered. The limit only grows if the student accepts.</span></div>
+        </div>
+      </div>
+      <div class="grid2e">
+        <div class="card">
+          <span class="h3">How we decide: two signals</span>
+          <p class="body">Standard checks and salary slips cannot judge most young applicants, so we use two factors instead of a credit score.</p>
+          <div>
+            <div class="exr"><span class="exk">Intent</span><span class="exv">The refundable deposit. It shows the student means to repay and gives the lender a baseline of trust.</span></div>
+            <div class="exr"><span class="exk">Capability</span><span class="exv">Consented monthly inflow totals from bank statements, checked against what the student tells us. We use the lower number. College ID confirms the student profile.</span></div>
+            <div class="exr"><span class="exk">Gate</span><span class="exv">Minimum inflow of ₹4,000 a month to open a limit. This is an assumption to confirm with the lender.</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="h3">What it costs</span>
+          <div>
+            <div class="exr"><span class="exk">Interest-free window</span><span class="exv">30 days from each spend. Repay in full and pay ₹0 extra.</span></div>
+            <div class="exr"><span class="exk">If not repaid in full</span><span class="exv">18% a year after the due date, about ₹22.50 a month on ₹1,500. Assumed.</span></div>
+            <div class="exr"><span class="exk">Late fee</span><span class="exv">₹50, flat, once per spend. It goes to the lender, not to Ascend. No compounding.</span></div>
+            <div class="exr"><span class="exk">Penalty interest</span><span class="exv">None beyond the normal rate.</span></div>
+            <div class="exr"><span class="exk">Other fees</span><span class="exv">₹0 joining, annual, processing and over-limit. No cash withdrawal.</span></div>
+            <div class="exr"><span class="exk">Worst case on ₹1,500</span><span class="exv">Repaid 30 days late: ₹1,572.50.</span></div>
+          </div>
+          <p class="help">Rates and fees are illustrative. The lending partner sets the real ones, and taxes apply as required.</p>
+        </div>
+      </div>
+      <div class="card">
+        <span class="h3">Guardrails: help without parenting</span>
+        <div class="grid2e" style="gap:24px">
+          <div>
+            <div class="exr"><span class="exk">Spend spike</span><span class="exv">If weekly spend rises sharply, limit growth locks and a soft reminder appears with simple financial advice.</span></div>
+            <div class="exr"><span class="exk">Inflow check</span><span class="exv">Every 2 to 3 months. If inflow drops, increases freeze until it recovers.</span></div>
+            <div class="exr"><span class="exk">Chosen offers only</span><span class="exv">Discounts apply to the categories the student picks. Big rewards that push spending are left out on purpose.</span></div>
+          </div>
+          <div>
+            <div class="exr"><span class="exk">Slips</span><span class="exv">Reminders at 7, 3 and 1 day. One free date shift of up to 7 days. After that, new draws pause and the limit steps down one, with the reason shown.</span></div>
+            <div class="exr"><span class="exk">Recovery</span><span class="exv">Pay what is overdue and one more repayment on time, and draws reopen.</span></div>
+            <div class="exr"><span class="exk">Parents</span><span class="exv">An opt-in, read-only progress link. A parent is not a guarantor, is never charged and is never contacted to collect a payment.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid2e">
+        <div class="card">
+          <span class="h3">Trust and privacy</span>
+          <div>
+            <div class="exr"><span class="exk">Consent first</span><span class="exv">Each data type has its own switch, a stated purpose, and a way to withdraw.</span></div>
+            <div class="exr"><span class="exk">Never accessed</span><span class="exv">Contacts, photos and messages. There is no switch because there is no access.</span></div>
+            <div class="exr"><span class="exk">Money path</span><span class="exv">Lender to the student&#39;s own bank account. Ascend never holds the money.</span></div>
+            <div class="exr"><span class="exk">Your data</span><span class="exv">Download your record, or delete your data from the Record and privacy page.</span></div>
+            <div class="exr"><span class="exk">Contact</span><span class="exv">We only contact the student. Never family, friends or contacts.</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <span class="h3">How Ascend earns</span>
+          <p class="body"><b>We earn when users repay on time, not when they struggle.</b></p>
+          <div>
+            <div class="exr"><span class="exk">Month 0 onward</span><span class="exv">Fee on performing accounts, paid by the lending partner.</span></div>
+            <div class="exr"><span class="exk">Month 1 onward</span><span class="exv">Share of card economics, paid by the lending partner.</span></div>
+            <div class="exr"><span class="exk">Month 1 onward</span><span class="exv">Merchant-funded offers, paid by merchants.</span></div>
+            <div class="exr"><span class="exk">Month 12 onward</span><span class="exv">Graduation referral to a larger partner bank.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="h3">How we will know it works</span>
+        <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+          <div class="kpi"><span class="kpil">North Star</span><span class="kpin">6 on-time in a row</span><span class="help">Early indicator: 3 in a row. Targets: 50% reach 3 by month 4, 35% reach 6 by month 8.</span></div>
+          <div class="kpi"><span class="kpil">Risk</span><span class="kpin">At least 92%</span><span class="help">Share of users who repay within the grace period. It should not go below 92%.</span></div>
+          <div class="kpi"><span class="kpil">Business</span><span class="kpin">Revenue per active user</span><span class="help">Measured over six months.</span></div>
+        </div>
+        <div>
+            <div class="exr"><span class="exk">Deposit drop-off</span><span class="exv">If more than 40% leave at the deposit step, we lower the minimum deposit.</span></div>
+            <div class="exr"><span class="exk">Good users leaving</span><span class="exv">If more than 15% of good users leave within 6 months because of the cap, the lender reviews the cap.</span></div>
+            <div class="exr"><span class="exk">Overspend</span><span class="exv">If a user&#39;s monthly spend jumps 30% and they miss a payment, new spending pauses until they catch up.</span></div>
+        </div>
+        <p class="help">The partner lender console in this prototype shows these measures on a simulated cohort of about 200 users.</p>
+      </div>
+      <div class="grid2e">
+        <div class="card">
+          <span class="h3">Scope and roadmap</span>
+          <div>
+            <div class="exr"><span class="exk">Now: pilot</span><span class="exv">One city cluster, Hyderabad. One partner lender. One starter line with a refundable deposit. Short tips in the app.</span></div>
+            <div class="exr"><span class="exk">Next</span><span class="exv">A second partner. Bigger limits for proven users. Short custom videos on the topics students actually need.</span></div>
+            <div class="exr"><span class="exk">Later</span><span class="exv">Merchant-funded rewards with guardrails. Graduation to full bank products from month 12. More cities.</span></div>
+          </div>
+          <p class="help">Left out for now: many banks, a choice of cards, bigger starting limits, large rewards and videos. The homepage explains why.</p>
+        </div>
+        <div class="card">
+          <span class="h3">Assumptions and open items</span>
+          <div>
+            <div class="exr"><span class="exk">Figures</span><span class="exv">1.5 times limits, 18% a year, the ₹50 late fee, 30 days and the ₹4,000 minimum are illustrative. Real values are set with the lending partner.</span></div>
+            <div class="exr"><span class="exk">Simulated</span><span class="exv">DigiLocker, bank data, bureau reporting, the lender and the parent link are simulated in this prototype.</span></div>
+            <div class="exr"><span class="exk">To confirm</span><span class="exv">Tax treatment, RBI digital-lending disclosures, the cooling-off period, and the credit bureau reporting process.</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="gap:18px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span class="h2">Our partners</span>
+          <p class="body" style="max-width:760px">Ascend does not lend. We work with one regulated lender at launch and design for many. These are the kinds of banks, NBFCs and infrastructure we are building around.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid #E6EBEF">
+          <div class="spread" style="justify-content:flex-start;gap:10px"><span class="h3">Banks</span><span class="pill neu">12</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px"><div class="plogo" title="HDFC Bank"><span class="pname" data-slug="hdfc-bank">HDFC Bank</span></div><div class="plogo" title="ICICI Bank"><span class="pname" data-slug="icici-bank">ICICI Bank</span></div><div class="plogo" title="Axis Bank"><span class="pname" data-slug="axis-bank">Axis Bank</span></div><div class="plogo" title="State Bank of India"><span class="pname" data-slug="state-bank-of-india">State Bank of India</span></div><div class="plogo" title="Kotak Mahindra Bank"><span class="pname" data-slug="kotak-mahindra-bank">Kotak Mahindra Bank</span></div><div class="plogo" title="IDFC FIRST Bank"><span class="pname" data-slug="idfc-first-bank">IDFC FIRST Bank</span></div><div class="plogo" title="Federal Bank"><span class="pname" data-slug="federal-bank">Federal Bank</span></div><div class="plogo" title="Yes Bank"><span class="pname" data-slug="yes-bank">Yes Bank</span></div><div class="plogo" title="IndusInd Bank"><span class="pname" data-slug="indusind-bank">IndusInd Bank</span></div><div class="plogo" title="RBL Bank"><span class="pname" data-slug="rbl-bank">RBL Bank</span></div><div class="plogo" title="AU Small Finance Bank"><span class="pname" data-slug="au-small-finance-bank">AU Small Finance Bank</span></div><div class="plogo" title="Bandhan Bank"><span class="pname" data-slug="bandhan-bank">Bandhan Bank</span></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid #E6EBEF">
+          <div class="spread" style="justify-content:flex-start;gap:10px"><span class="h3">NBFCs</span><span class="pill neu">12</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px"><div class="plogo" title="Bajaj Finance"><span class="pname" data-slug="bajaj-finance">Bajaj Finance</span></div><div class="plogo" title="Tata Capital"><span class="pname" data-slug="tata-capital">Tata Capital</span></div><div class="plogo" title="Poonawalla Fincorp"><span class="pname" data-slug="poonawalla-fincorp">Poonawalla Fincorp</span></div><div class="plogo" title="Aditya Birla Capital"><span class="pname" data-slug="aditya-birla-capital">Aditya Birla Capital</span></div><div class="plogo" title="L&amp;T Finance"><span class="pname" data-slug="l-t-finance">L&amp;T Finance</span></div><div class="plogo" title="Muthoot Finance"><span class="pname" data-slug="muthoot-finance">Muthoot Finance</span></div><div class="plogo" title="Shriram Finance"><span class="pname" data-slug="shriram-finance">Shriram Finance</span></div><div class="plogo" title="Mahindra Finance"><span class="pname" data-slug="mahindra-finance">Mahindra Finance</span></div><div class="plogo" title="Cholamandalam Finance"><span class="pname" data-slug="cholamandalam-finance">Cholamandalam Finance</span></div><div class="plogo" title="Hero FinCorp"><span class="pname" data-slug="hero-fincorp">Hero FinCorp</span></div><div class="plogo" title="Piramal Finance"><span class="pname" data-slug="piramal-finance">Piramal Finance</span></div><div class="plogo" title="Fullerton India"><span class="pname" data-slug="fullerton-india">Fullerton India</span></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid #E6EBEF">
+          <div class="spread" style="justify-content:flex-start;gap:10px"><span class="h3">Credit bureaus</span><span class="pill neu">4</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px"><div class="plogo" title="TransUnion CIBIL"><span class="pname" data-slug="transunion-cibil">TransUnion CIBIL</span></div><div class="plogo" title="Experian"><span class="pname" data-slug="experian">Experian</span></div><div class="plogo" title="CRIF High Mark"><span class="pname" data-slug="crif-high-mark">CRIF High Mark</span></div><div class="plogo" title="Equifax"><span class="pname" data-slug="equifax">Equifax</span></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding-top:18px;border-top:1px solid #E6EBEF">
+          <div class="spread" style="justify-content:flex-start;gap:10px"><span class="h3">Identity and payment rails</span><span class="pill neu">3</span></div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px"><div class="plogo" title="UPI"><span class="pname" data-slug="upi">UPI</span></div><div class="plogo" title="DigiLocker"><span class="pname" data-slug="digilocker">DigiLocker</span></div><div class="plogo" title="Account Aggregator"><span class="pname" data-slug="account-aggregator">Account Aggregator</span></div></div>
+        </div>
+        <div class="ban info"><span>Illustrative list of the ecosystem we are designing for. Logos belong to their respective owners and are shown only to illustrate the ecosystem. It does not mean any of these institutions has agreed to partner with Ascend. The pilot partner will be chosen with the team and confirmed before launch.</span></div>
+      </div>
+    </sc-if>
+
+  </div>
+  </sc-if>
+
+  <!-- LENDER CONSOLE -->
+  <sc-if value="{{ isConsoleView }}" hint-placeholder-val="{{ false }}">
+  <div class="wrap">
+    <div class="spread">
+      <div style="display:flex;flex-direction:column;gap:6px"><h1 class="h1">Partner lender console</h1><p class="lead">Risk, proof and one control that acts on the live app.</p></div>
+    </div>
+    <div class="ban warn"><span><b>Simulated cohort.</b> About 200 users generated from a fixed seed. The live demo user is in the first row of the table.</span></div>
+    <div class="card">
+      <div class="spread">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <span class="h3">Freeze limit increases</span>
+          <span class="help" style="color:#2B3A45">When on, users see that increases are paused. Current limits do not change. Switch it on, then open the borrower app.</span>
+        </div>
+        <button class="tog {{ freezeCls }}" role="switch" aria-label="Freeze limit increases" aria-checked="{{ freeze }}" onClick="{{ toggleFreeze }}"></button>
+      </div>
+      <sc-if value="{{ riskBad }}" hint-placeholder-val="{{ false }}"><div class="ban bad"><span>Late share is above 10%. Pause new onboarding is recommended.</span></div></sc-if>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="kpil">Activated users</span><span class="kpin">{{ kActivated }}</span><span class="help">Includes the live demo user once they draw.</span></div>
+      <div class="kpi"><span class="kpil">North Star: 6 on-time repayments in a row</span><span class="kpin">{{ kNorth }}</span>
+        <div class="track"><div class="fillb" style="width:{{ northW }}%;background:#0E7C86"></div><div class="mark" style="left:60%"></div></div>
+        <span class="help">Target 60% within 6 months. Assumed.</span></div>
+      <div class="kpi"><span class="kpil">Repayments more than 30 days late</span><span class="kpin">{{ kLate }}</span>
+        <div class="track"><div class="fillb" style="width:{{ lateW }}%;background:{{ lateColor }}"></div><div class="mark" style="left:40%"></div><div class="mark" style="left:66.6%"></div></div>
+        <span class="pill {{ latePill }}" style="align-self:flex-start">{{ lateState }}</span></div>
+      <div class="kpi"><span class="kpil">Repaid inside the free window</span><span class="kpin">{{ kWindow }}</span>
+        <div class="track"><div class="fillb" style="width:{{ windowW }}%;background:#1F7A4D"></div></div>
+        <span class="help">The rest paid interest or paid late. Simulated.</span></div>
+      <div class="kpi"><span class="kpil">Exposure covered by deposits</span><span class="kpin">{{ kCover }}</span>
+        <div style="display:flex;flex-direction:column;gap:2px">
+          <sc-for list="{{ tierMix }}" as="tm" hint-placeholder-count="3">
+            <div class="spread"><span class="help">{{ tm.name }}</span><span class="help" style="color:#12202A;font-weight:600">{{ tm.n }} users, {{ tm.pct }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    <div class="grid2e">
+      <div class="card">
+        <span class="h3">Late share by limit step</span>
+        <div class="chart">
+          <span class="thrt" style="bottom:{{ y6 }}px">6%</span><div class="thr t6" style="bottom:{{ y6 }}px"></div>
+          <span class="thrt" style="bottom:{{ y10 }}px">10%</span><div class="thr" style="bottom:{{ y10 }}px"></div>
+          <div class="cbars">
+            <sc-for list="{{ lateBars }}" as="lb" hint-placeholder-count="3">
+              <div class="cbc"><span class="bartxt" style="font-weight:700;color:#12202A">{{ lb.v }}</span><div class="cb" style="height:{{ lb.h }}px;background:{{ lb.c }}"></div><span class="bartxt">{{ lb.name }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+        <p class="help">Amber line: freeze limit increases. Red line: stop new onboarding. In the demo, a missed repayment counts as late.</p>
+      </div>
+      <div class="card">
+        <span class="h3">Cohort funnel</span>
+        <div class="fn">
+          <sc-for list="{{ funnel }}" as="fu" hint-placeholder-count="5">
+            <div class="fnr"><span class="fnl">{{ fu.name }}</span><div class="fnt"><div class="fnb" style="width:{{ fu.w }}%"></div></div><span class="fnv">{{ fu.n }}</span></div>
+          </sc-for>
+        </div>
+        <p class="help">Bars are scaled to activated users.</p>
+      </div>
+    </div>
+    <div class="card">
+      <span class="h3">How Ascend earns</span>
+      <div class="earn">
+        <div><span class="lbl">Partner economics</span><span class="help" style="color:#2B3A45">A servicing fee paid by the lender on spends that are current. Rate set with the lender. Assumed.</span></div>
+        <div><span class="lbl">Merchant-funded offers</span><span class="help" style="color:#2B3A45">Partner brands fund the discounts students use. Terms set with each brand. Assumed.</span></div>
+        <div><span class="lbl">Hand-over fee</span><span class="help" style="color:#2B3A45">Paid when a bank takes a graduated user. Rate set with the bank. Assumed.</span></div>
+        <div style="background:#E3F1E9;border-color:#B5D9C3"><span class="lbl">Late-fee income</span><span class="kpin" style="font-size:32px">₹0</span><span class="help" style="color:#14502F">By design. Late charges go to the lender.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="spread">
+        <span class="h3">Cohort</span>
+        <div class="dockrow">
+          <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4"><button class="btn sm {{ f.cls }}" onClick="{{ f.pick }}">{{ f.label }}</button></sc-for>
+        </div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>User</th><th>Limit step</th><th>Deposit to limit</th><th>Repayments</th><th>Longest delay</th><th>Status</th></tr></thead>
+        <tbody>
+          <sc-for list="{{ rows }}" as="r" hint-placeholder-count="7">
+            <tr class="{{ r.cls }}"><td>{{ r.id }}</td><td>{{ r.tier }}</td><td>{{ r.dl }}</td><td>{{ r.inst }}</td><td>{{ r.delay }}</td><td><span class="pill {{ r.pill }}">{{ r.status }}</span></td></tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <p class="help">Showing {{ rowsShown }} of {{ rowsTotal }}. Simulated.</p>
+    </div>
+  </div>
+  </sc-if>
+  </div>
+
+    </div>
+  </div>
+
+  <!-- DOCK -->
+  <div class="dock">
+    <div class="dockrow">
+      <span class="dtag">Prototype controls</span>
+      <button class="dk {{ appCls }}" onClick="{{ setApp }}">Borrower app</button>
+      <button class="dk {{ conCls }}" onClick="{{ setConsole }}">Lender console</button>
+      <span class="dsep"></span>
+      <span class="dlab">Screen</span>
+      <sc-for list="{{ jumps }}" as="j" hint-placeholder-count="12">
+        <button class="dk n {{ j.cls }}" title="{{ j.name }}" aria-label="{{ j.name }}" onClick="{{ j.go }}">{{ j.n }}</button>
+      </sc-for>
+      <span class="grow"></span>
+      <span class="dlab">Prototype date</span><span style="font:700 13px 'Instrument Sans',system-ui,sans-serif">{{ nowStr }}</span>
+    </div>
+    <div class="dockrow">
+      <span class="dlab" style="width:116px">Move time and events</span>
+      <button class="dk" onClick="{{ jumpReminder }}">Next reminder</button>
+      <button class="dk" onClick="{{ jumpNext }}">Next due date, paid</button>
+      <button class="dk" onClick="{{ markMissed }}">Mark missed</button>
+      <button class="dk {{ inflowOn }}" onClick="{{ toggleInflow }}">{{ inflowBtn }}</button>
+      <span class="grow"></span>
+      <button class="dk" onClick="{{ resetAll }}">Reset prototype</button>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <sc-if value="{{ sheetWhy }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">{{ whyTitle }}</span>
+      <sc-for list="{{ whyLines }}" as="w" hint-placeholder-count="4"><p class="body">{{ w.t }}</p></sc-for>
+      <p class="help">All figures are assumptions until a lender confirms them.</p>
+      <button class="btn" style="align-self:flex-start" onClick="{{ closeSheet }}">Got it</button>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetLearn }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">{{ learnTitle }}</span>
+      <sc-for list="{{ learnLines }}" as="w" hint-placeholder-count="3"><p class="body">{{ w.t }}</p></sc-for>
+      <div style="display:flex;gap:14px;align-items:center"><button class="btn" onClick="{{ closeSheet }}">Got it</button><button class="link" onClick="{{ closeSheet }}">Skip</button></div>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetAdvice }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">Your spending rose this week</span>
+      <p class="body">You spent {{ weekStr }} in the last 7 days, more than half of your draw.</p>
+      <p class="body">Your limit growth is paused for now. It reopens when your weekly spending settles.</p>
+      <p class="body"><b>A simple habit:</b> set aside your next repayment first, then spend what is left.</p>
+      <button class="btn" style="align-self:flex-start" onClick="{{ closeSheet }}">Got it</button>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetTier }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">How your limit grows</span>
+      <div class="ladder">
+        <sc-for list="{{ ladder }}" as="l" hint-placeholder-count="3">
+          <div class="step {{ l.cls }}" style="height:{{ l.h }}px"><span class="sn2">{{ l.name }}</span><span class="sc">{{ l.cap }}</span><span class="sr">{{ l.rule }}</span></div>
+        </sc-for>
+      </div>
+      <p class="body">Limits only go up when you accept an offer. A miss moves you down one step, with the reason shown.</p>
+      <button class="btn" style="align-self:flex-start" onClick="{{ closeSheet }}">Got it</button>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetSponsor }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">What your parent would see</span>
+      <p class="help">A read-only page. They cannot pay, borrow or change anything.</p>
+      <div class="card" style="background:#F4F6F8">
+        <div class="kv"><span class="kvk">Limit step</span><span class="kvv">{{ tierShort }}</span></div>
+        <div class="kv"><span class="kvk">On-time repayments</span><span class="kvv">{{ onTimeCount }}</span></div>
+        <div class="kv"><span class="kvk">Next due date</span><span class="kvv">{{ nextDateOrDash }}</span></div>
+      </div>
+      <p class="body">They never see what you spend, your balances, your bank account or your messages.</p>
+      <p class="body">A parent is not a guarantor and is never charged. Ascend only contacts you, and never contacts a parent to collect a payment.</p>
+      <p class="help">Link: ascend.example/share/a1b2c3 (example). It stops working when you turn sharing off.</p>
+      <button class="btn" style="align-self:flex-start" onClick="{{ closeSheet }}">Done</button>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetCsv }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">Your record file</span>
+      <p class="help">Preview. In the real build this downloads to your device.</p>
+      <pre style="margin:0;background:#F4F6F8;border-radius:12px;padding:14px;font:500 13px/20px ui-monospace,Menlo,monospace;overflow-x:auto;white-space:pre">{{ csvText }}</pre>
+      <button class="btn" style="align-self:flex-start" onClick="{{ closeSheet }}">Done</button>
+    </div></div>
+  </sc-if>
+  <sc-if value="{{ sheetDelete }}" hint-placeholder-val="{{ false }}">
+    <div class="scrim" onClick="{{ closeSheet }}"><div class="modal" onClick="{{ stop }}">
+      <span class="h2">Delete your data?</span>
+      <p class="body">This deletes your profile, consents and inflow totals from Ascend. Your lender may keep loan records it must keep by law. Assumed.</p>
+      <div style="display:flex;gap:12px"><button class="btn bad" onClick="{{ doDelete }}">Delete</button><button class="btn sec" onClick="{{ closeSheet }}">Keep my data</button></div>
+    </div></div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div class="toast">{{ toast }}</div></sc-if>
+
+  <sc-if value="{{ deleted }}" hint-placeholder-val="{{ false }}">
+    <div class="full">
+      <h2 class="h1">Your data is deleted</h2>
+      <p class="lead">Your profile, consents and inflow totals are gone from Ascend.</p>
+      <button class="btn pri" onClick="{{ resetAll }}">Start again</button>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":960}}'>
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY = 86400000;
+const BASE = Date.UTC(2026, 9, 9);
+const RATE = 0.015;
+const MULT = [1.5, 1.75, 2];
+const IDS = ['HYD-24-0187', 'HYD-24-0212', 'HYD-25-0044', 'HYD-23-0399'];
+const PROFILES = {
+  ishaan: { label: 'Ishaan, 20', avg: 8000, months: [6000, 8500, 6000, 9500, 7000, 11000] },
+  low: { label: 'Low-inflow student', avg: 4000, months: [3200, 4600, 3800, 4400, 3600, 4400] },
+  high: { label: 'High-inflow student', avg: 15000, months: [12000, 17500, 14000, 16000, 13500, 17000] },
+  under: { label: 'Under the minimum', avg: 2500, months: [2000, 3000, 2500, 2200, 3100, 2200] }
+};
+const CATS = [
+  { k: 'food', label: 'Food', disc: 10, text: 'Partner cafes and food delivery' },
+  { k: 'clothes', label: 'Clothes', disc: 8, text: 'Partner clothing stores' },
+  { k: 'books', label: 'Books', disc: 12, text: 'Partner bookstores and stationery' },
+  { k: 'travel', label: 'Travel', disc: 5, text: 'Partner bus and train booking' },
+  { k: 'tech', label: 'Tech', disc: 4, text: 'Partner electronics stores' }
+];
+const TIPS = [
+  'Paying even one day early still counts as on time.',
+  'Your credit record starts with your first repayment.',
+  'A missed payment can lower your score. Paying soon limits the effect.',
+  'Your deposit is yours. You can withdraw it once your draw is repaid.',
+  'Your starting limit is 1.5 times your deposit, and it grows only when you repay on time.'
+];
+const SCREENS = [
+  ['welcome', 'Sign up'], ['consent', 'Consent'], ['inflow', 'Verify'], ['deposit', 'Deposit'],
+  ['offer', 'Your limit'], ['draw', 'Total cost'], ['money', 'Money path'], ['spend', 'Spend it'],
+  ['home', 'Home'], ['repay', 'Repay or slip'], ['score', 'Score and limit'], ['record', 'Record and privacy'], ['about', 'About']
+];
+const inr = (n) => '₹' + Math.round(n).toLocaleString('en-IN');
+const inr2 = (n) => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const dShort = (ms) => { const d = new Date(ms); return d.getUTCDate() + ' ' + MONTHS[d.getUTCMonth()]; };
+const ord = (n) => (n === 1 ? '1st' : n + 'th');
+const limitFor = (avg, tier, dep) => {
+  const byDeposit = Math.floor(dep * MULT[tier] / 50) * 50;
+  return { byDeposit: byDeposit, ceil: avg, limit: byDeposit, binds: 'deposit' };
+};
+const costFor = (p) => ({ m: p, t: p, i: 0 });
+const firstDue = (pd, t) => {
+  const d = new Date(t + 15 * DAY);
+  let m = d.getUTCMonth();
+  if (d.getUTCDate() > pd) m += 1;
+  return Date.UTC(d.getUTCFullYear(), m, pd);
+};
+const streakOf = (arr) => {
+  let s = 0;
+  arr.forEach((i) => {
+    if (i.status === 'ontime') s += 1;
+    else if (i.status === 'missed' || i.status === 'paidlate') s = 0;
+  });
+  return s;
+};
+const makeCohort = () => {
+  let a = 2026;
+  const rnd = () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const pl = [0.06, 0.035, 0.015];
+  const rows = [];
+  for (let i = 0; i < 200; i++) {
+    const r = rnd();
+    const tier = r < 0.10 ? 0 : (r < 0.25 ? 1 : 2);
+    const n = tier === 0 ? 1 + Math.floor(rnd() * 3) : (tier === 1 ? 4 + Math.floor(rnd() * 3) : 6 + Math.floor(rnd() * 3));
+    let late = 0, carry = 0, streak = 0, lastLate = false, maxDelay = 0;
+    for (let k = 0; k < n; k++) {
+      const r2 = rnd();
+      if (r2 < pl[tier]) { late += 1; streak = 0; lastLate = true; maxDelay = Math.max(maxDelay, 31 + Math.floor(rnd() * 20)); }
+      else if (r2 < pl[tier] + 0.04) { carry += 1; streak = 0; lastLate = false; }
+      else { streak += 1; lastLate = false; }
+    }
+    const dep = [3000, 5000, 5000][Math.floor(rnd() * 3)];
+    const limit = Math.floor(dep * MULT[tier] / 50) * 50;
+    const grad = !lastLate && tier === 2 && rnd() < 0.2;
+    const status = lastLate ? (tier === 0 ? 'Paused' : 'Missed') : (grad ? 'Graduated' : 'Current');
+    rows.push({ id: 'U-' + String(i + 1).padStart(4, '0'), tier: tier, n: n, late: late, carry: carry, streak: streak, dep: dep, limit: limit, maxDelay: maxDelay, status: status });
+  }
+  return rows;
+};
+const fresh = () => ({
+  view: 'app', screen: 'welcome', phone: '98765 43210', otpSent: false, otp: '', dob: '14/03/2006', dl: false, enrol: 'HYD-24-0187',
+  consent: { id: false, inflow: false, mobile: false, bureau: false }, consentAt: {},
+  profile: 'ishaan', prof: 'student', fam: 6000, own: 2000, tier: 0, depAmt: 5000, depLocked: false, amount: 1500, ack: false, stage: 0,
+  loans: [], inst: [], events: [], purchases: [], cats: ['food', 'clothes'], off: 0, shiftUsed: false, shiftDays: 3,
+  drawsPaused: false, recovery: false, stepDown: null, freeze: false, inflowDrop: false, sponsor: false, spNum: '98200 11122', spSent: false,
+  sheet: null, why: 'limit', learn: 'cost', tierNote: '', toast: '', deleted: false, withdrawn: false, pulse: false,
+  seenMiss: false, tipSeen: -1, filter: 'all'
+});
+
+class Component extends DCLogic {
+  constructor(...args) {
+    super(...args);
+    this.state = fresh();
+    this._co = null;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const self = this;
+    const set = (o) => self.setState(o);
+    const now = BASE + s.off * DAY;
+    const P = PROFILES[s.profile];
+    const bankAvg = P.avg;
+    const famN = Math.max(0, Math.min(100000, +s.fam || 0));
+    const ownN = Math.max(0, Math.min(100000, +s.own || 0));
+    const declared = famN + ownN;
+    const avg = Math.min(bankAvg, declared);
+    const PROFS = [['student', 'Student'], ['parttime', 'Student with part-time or freelance work'], ['intern', 'Intern'], ['working', 'Working full time']];
+    const profOK = s.prof !== 'working';
+    const profChips = PROFS.map((x) => ({ label: x[1], cls: s.prof === x[0] ? 'on' : '', pick: () => set({ prof: x[0] }) }));
+    const dep = s.depAmt;
+    const scr = s.screen;
+    const stamp = () => dShort(now) + ', ' + new Date().toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+    const tn = (i) => 'Tier ' + (i + 1);
+    const toast = (m) => {
+      clearTimeout(self._tt);
+      set({ toast: m });
+      self._tt = setTimeout(() => set({ toast: '' }), 2800);
+    };
+
+    // sign-up
+    const m = s.dob.match(/^\s*(\d{1,2})\s*\/\s*(\d{1,2})\s*\/\s*(\d{4})\s*$/);
+    let dobOK = false, age = 0;
+    if (m) {
+      const dd = +m[1], mm = +m[2], yy = +m[3];
+      dobOK = dd >= 1 && dd <= 31 && mm >= 1 && mm <= 12 && yy >= 1950 && yy <= 2026;
+      const t = new Date(now);
+      age = t.getUTCFullYear() - yy;
+      if (t.getUTCMonth() + 1 < mm || (t.getUTCMonth() + 1 === mm && t.getUTCDate() < dd)) age -= 1;
+    }
+    const underage = dobOK && age < 18;
+    const enrolOK = IDS.indexOf(s.enrol.trim().toUpperCase()) >= 0;
+    const otpOK = s.otp === '123456';
+    const phoneOK = s.phone.replace(/\D/g, '').length === 10;
+    const welcomeOK = otpOK;
+    const verifiedAll = dobOK && age >= 18 && age <= 30 && s.dl && enrolOK;
+    const oddAge = dobOK && age > 30;
+
+    // limit and cost (30-day revolving window)
+    const L = limitFor(avg, s.tier, dep);
+    const eligible = avg >= 4000 && profOK;
+    const limitNow = eligible ? L.limit : 0;
+    const openStatus = (x) => x.status === 'upcoming' || x.status === 'shifted' || x.status === 'missed';
+    const outstanding = s.inst.filter(openStatus).reduce((a, x) => a + x.amount, 0);
+    const available = Math.max(0, limitNow - outstanding);
+    const blockNoRoom = eligible && s.depLocked && available < 500;
+    const maxAmt = Math.max(500, available);
+    const amtEff = Math.min(Math.max(500, Math.round(s.amount / 100) * 100), maxAmt);
+    const cc = costFor(amtEff);
+    const ceilingNote = outstanding > 0 && available >= 500 && amtEff >= available;
+    const limitLine = 'Limit ' + inr(limitNow) + ' · in use ' + inr(outstanding) + ' · available ' + inr(available);
+    const lateInt = amtEff * RATE;
+    const drawTitle = 'Repay within 30 days and pay ₹0 extra. If you can\u2019t, here is exactly what it costs.';
+    const drawLead = 'Your deposit sets your limit. You spend from it, repay within the window, and the limit refills. There are no EMIs.';
+    const missHead = 'If you repay late (' + inr(amtEff) + '):';
+    const missText = 'interest of 1.5% a month on what is unpaid, plus a \u20B950 late fee that goes to the lender, not to Ascend. Your score can drop.';
+    const payLabel = 'You pay on day 30 (' + dShort(now + 30 * DAY) + ')';
+    const rateNote = 'Interest-free if repaid in full by day 30. Otherwise 18% a year (1.5% a month) on what is unpaid. No processing fee. Assumed.';
+    const exTitle = 'Worked example: a ' + inr(amtEff) + ' spend';
+    const exRows = [
+      { k: 'Repay by day 30', v: 'You pay ' + inr(amtEff) + '. Extra cost is ₹0.' },
+      { k: 'Repay 30 days late', v: inr(amtEff) + ' + ' + inr2(lateInt) + ' interest + ₹50 late fee = ' + inr2(amtEff + lateInt + 50) + '.' }
+    ];
+    const exWorst = 'Worst case for the first month: ' + inr2(amtEff + lateInt + 50) + ' instead of ' + inr(amtEff) + '.';
+    const chargeRows = [
+      { k: 'Interest-free window', v: '30 days from each spend. Repay in full by the due date and pay ₹0 extra.' },
+      { k: 'Interest if not repaid in full', v: '18% a year, which is 1.5% a month. On ' + inr(amtEff) + ' left unpaid, that is ' + inr2(lateInt) + ' for 30 more days.' },
+      { k: 'Joining, annual and processing fee', v: '₹0' },
+      { k: 'Late payment fee', v: '₹50, flat, charged once per spend. It goes to the lender and does not compound.' },
+      { k: 'Penalty interest', v: 'None beyond the normal 1.5% a month' },
+      { k: 'Over-limit fee', v: '₹0. A spend above the limit is declined.' },
+      { k: 'Cash withdrawal', v: 'Not available' },
+      { k: 'Taxes', v: 'Taxes as applicable (GST on fees and interest, to confirm with the lender)' },
+      { k: 'Deposit', v: 'Refundable once dues are cleared and you exit' },
+      { k: 'Credit record', v: 'On-time payments build your history. Missed payments are reported and can lower it.' }
+    ];
+
+    // loans and clock
+    const isOpen = (x) => x.status === 'upcoming' || x.status === 'shifted' || x.status === 'missed';
+    const open = s.inst.filter(isOpen);
+    const nx = s.inst.find((x) => x.status === 'upcoming' || x.status === 'shifted');
+    const overdue = s.inst.filter((x) => x.status === 'missed');
+    const hasOverdue = overdue.length > 0;
+    const overdueAmt = overdue.reduce((a, x) => a + x.amount, 0);
+    const streak = streakOf(s.inst);
+    const onTimeCount = s.inst.filter((x) => x.status === 'ontime').length;
+    const daysTo = nx ? Math.round((nx.due - now) / DAY) : 99;
+    const reminderNo = nx && daysTo >= 0 ? (daysTo <= 1 ? 3 : (daysTo <= 3 ? 2 : (daysTo <= 7 ? 1 : 0))) : 0;
+    const dayText = daysTo <= 0 ? 'today' : (daysTo === 1 ? 'tomorrow' : 'in ' + daysTo + ' days');
+    const reminderText = reminderNo ? 'Reminder ' + reminderNo + ' of 3: ' + (nx ? inr(nx.amount) : '') + ' is due ' + dayText + ' (' + (nx ? dShort(nx.due) : '') + '). Autopay will take it from your account.' : '';
+    const meterFilled = s.tier >= 2 ? 3 : Math.min(3, Math.max(0, streak - s.tier * 3));
+
+    // spending
+    const principalSum = s.loans.reduce((a, l) => a + l.principal, 0);
+    const spentSum = s.purchases.reduce((a, p) => a + p.pay, 0);
+    const balance = Math.max(0, principalSum - spentSum);
+    const savedSum = s.purchases.reduce((a, p) => a + (p.amt - p.pay), 0);
+    const openLoans = s.loans.filter((l) => s.inst.some((x) => x.loan === l.id && isOpen(x)));
+    const base = openLoans.length ? openLoans.reduce((a, l) => a + l.principal, 0) : (s.loans.length ? s.loans[s.loans.length - 1].principal : 0);
+    const weekly = s.purchases.filter((p) => p.t > now - 7 * DAY).reduce((a, p) => a + p.pay, 0);
+    const thr = base > 0 ? Math.max(500, Math.round(base * 0.5)) : 0;
+    const spike = base > 0 && weekly > thr;
+
+    // growth
+    const nextL = s.tier < 2 ? limitFor(avg, s.tier + 1, dep) : null;
+    const hasRise = !!nextL && nextL.limit > L.limit;
+    const streakOk = s.tier < 2 && streak >= (s.tier + 1) * 3 && !s.drawsPaused && !hasOverdue && s.depLocked && !s.withdrawn;
+    const stepUpReady = streakOk && hasRise;
+    const inflowCapped = streakOk && !hasRise;
+    const growthMsg = s.freeze ? 'The lender paused limit increases for now. Your limit has not changed.'
+      : (s.inflowDrop ? 'Your inflow dropped at the latest check, so limit growth is frozen until it recovers.'
+      : (spike ? 'Your spending rose this week, so limit growth is paused until it settles.' : ''));
+    const growthLocked = growthMsg.length > 0;
+
+    // actions
+    const consentAtAll = () => ({ id: stamp(), inflow: stamp(), mobile: stamp(), bureau: stamp() });
+    const buildLoan = (st, principal) => {
+      const id = 'L' + (st.loans.length + 1);
+      const t = BASE + st.off * DAY;
+      return {
+        loans: st.loans.concat([{ id: id, principal: principal, n: 1, monthly: principal, total: principal, at: t }]),
+        inst: st.inst.concat([{ id: id + '-1', loan: id, n: 1, due: t + 30 * DAY, amount: principal, status: 'upcoming', shifted: false }]),
+        events: st.events.concat([{ t: t, text: inr(principal) + ' received from your partner lender. Due in 30 days.', cls: 'ok' }, { t: t, text: 'Autopay set for ' + dShort(t + 30 * DAY), cls: '' }])
+      };
+    };
+    const go = (k) => () => {
+      const st = self.state;
+      const p = { screen: k, sheet: null, view: 'app' };
+      if (['inflow', 'deposit', 'offer', 'draw', 'money', 'spend', 'home', 'repay', 'score', 'record'].indexOf(k) >= 0) {
+        p.otpSent = true; p.otp = '123456';
+        p.consent = { id: true, inflow: true, mobile: true, bureau: true }; p.dl = true;
+        p.consentAt = Object.keys(st.consentAt).length ? st.consentAt : consentAtAll();
+        p.withdrawn = false;
+      }
+      if (['offer', 'draw', 'money', 'spend', 'home', 'repay', 'score', 'record'].indexOf(k) >= 0 && !st.depLocked) {
+        p.depLocked = true;
+        p.events = st.events.concat([{ t: BASE + st.off * DAY, text: inr(st.depAmt) + ' deposit locked with the partner bank (simulated)', cls: '' }]);
+      }
+      if (['money', 'spend', 'home', 'repay', 'score', 'record'].indexOf(k) >= 0 && !st.loans.length) {
+        const first = Math.min(1500, Math.max(500, limitFor(PROFILES[st.profile].avg, st.tier, st.depAmt).limit));
+        const bl = buildLoan(Object.assign({}, st, { events: p.events || st.events }), first);
+        Object.assign(p, bl);
+      }
+      if (k === 'money') p.stage = 2;
+      set(p);
+    };
+    const lockDeposit = () => {
+      const st = self.state;
+      if (st.depLocked || !eligible || !st.dl) return;
+      set({ depLocked: true, events: st.events.concat([{ t: now, text: inr(st.depAmt) + ' deposit locked with the partner bank (simulated)', cls: '' }]) });
+      toast('Deposit locked with the partner bank (simulated).');
+    };
+    const withdrawDeposit = () => {
+      const st = self.state;
+      if (!st.depLocked || open.length > 0) return;
+      set({ depLocked: false, tier: 0, screen: 'deposit', events: st.events.concat([{ t: now, text: inr(st.depAmt) + ' deposit returned to your account (simulated)', cls: '' }]) });
+      toast('Deposit sent back to your account. Your limit is closed.');
+    };
+    const confirmDraw = () => {
+      const st = self.state;
+      const p = buildLoan(st, amtEff);
+      p.screen = 'money'; p.stage = 0; p.ack = false;
+      set(p);
+      setTimeout(() => set({ stage: 1 }), 900);
+      setTimeout(() => set({ stage: 2 }), 1900);
+    };
+    const stepDownPatch = (st, reason) => {
+      if (st.drawsPaused) return {};
+      const to = Math.max(0, st.tier - 1);
+      return { drawsPaused: true, tier: to, stepDown: { from: st.tier, to: to, reason: reason } };
+    };
+    const advance = (miss) => () => {
+      const st = self.state;
+      const inst = st.inst.map((x) => Object.assign({}, x));
+      const target = inst.find((x) => x.status === 'upcoming' || x.status === 'shifted');
+      if (!target) { toast('Nothing is due. Take a draw first.'); return; }
+      let patch = {};
+      const od = inst.find((x) => x.status === 'missed');
+      if (od) patch = stepDownPatch(st, 'WINDOW_PASSED');
+      else if (miss && target.status === 'shifted') patch = stepDownPatch(st, 'SHIFT_THEN_MISS');
+      const off = Math.max(st.off, Math.round((target.due - BASE) / DAY));
+      let events = st.events;
+      if (miss) {
+        target.status = 'missed';
+        events = events.concat([{ t: target.due, text: 'Repayment of ' + inr(target.amount) + ' missed', cls: 'warn' }]);
+        patch.screen = 'repay'; patch.view = 'app';
+        if (!st.seenMiss) { patch.sheet = 'learn'; patch.learn = 'miss'; patch.seenMiss = true; }
+      } else {
+        target.status = 'ontime';
+        events = events.concat([{ t: target.due, text: 'Autopay took ' + inr(target.amount) + '. On time.', cls: 'ok' }]);
+        patch.view = 'app';
+        if (st.recovery && !od) {
+          patch.drawsPaused = false; patch.recovery = false; patch.stepDown = null;
+          toast('Draws are open again.');
+        }
+      }
+      patch.inst = inst; patch.off = off; patch.events = events;
+      set(patch);
+    };
+    const jumpReminder = () => {
+      const st = self.state;
+      const target = st.inst.find((x) => x.status === 'upcoming' || x.status === 'shifted');
+      if (!target) { toast('Nothing is due. Take a draw first.'); return; }
+      const dueOff = Math.round((target.due - BASE) / DAY);
+      const cands = [dueOff - 7, dueOff - 3, dueOff - 1];
+      const pick = cands.find((c) => c > st.off);
+      if (pick === undefined) { toast('All three reminders have been sent for this repayment.'); return; }
+      set({ off: pick, screen: 'home', view: 'app', sheet: null });
+    };
+    const payNow = () => {
+      const st = self.state;
+      const inst = st.inst.map((x) => Object.assign({}, x));
+      const od = inst.filter((x) => x.status === 'missed');
+      if (od.length) {
+        od.forEach((x) => { x.status = 'paidlate'; });
+        set({ inst: inst, recovery: st.drawsPaused, events: st.events.concat([{ t: now, text: 'Overdue ' + inr(overdueAmt) + ' paid', cls: '' }]) });
+        toast(st.drawsPaused ? 'Overdue paid. One more on-time repayment reopens draws.' : 'Overdue paid. Your record shows it paid late.');
+        return;
+      }
+      const target = inst.find((x) => x.status === 'upcoming' || x.status === 'shifted');
+      if (!target) { toast('Nothing is due right now.'); return; }
+      target.status = 'ontime';
+      const early = { inst: inst, events: st.events.concat([{ t: now, text: 'You paid ' + inr(target.amount) + ' early. On time.', cls: 'ok' }]) };
+      if (st.recovery) { early.drawsPaused = false; early.recovery = false; early.stepDown = null; }
+      set(early);
+      toast(st.recovery ? 'Paid on time. Draws are open again.' : 'Paid. Counted as on time.');
+    };
+    const payInst = (id) => () => {
+      const st = self.state;
+      const inst = st.inst.map((x) => Object.assign({}, x));
+      const x = inst.find((y) => y.id === id);
+      if (!x) return;
+      if (x.status === 'missed') {
+        x.status = 'paidlate';
+        set({ inst: inst, recovery: st.drawsPaused ? true : st.recovery, events: st.events.concat([{ t: now, text: 'Overdue ' + inr(x.amount) + ' paid', cls: '' }]) });
+        toast(st.drawsPaused ? 'Overdue paid. One more on-time repayment reopens draws.' : 'Overdue paid. Your record shows it paid late.');
+        return;
+      }
+      x.status = 'ontime';
+      const early = { inst: inst, events: st.events.concat([{ t: now, text: 'You paid ' + inr(x.amount) + ' early. On time.', cls: 'ok' }]) };
+      if (st.recovery && !inst.some((y) => y.status === 'missed')) { early.drawsPaused = false; early.recovery = false; early.stepDown = null; }
+      set(early);
+      toast(st.recovery ? 'Paid on time. Draws are open again.' : 'Paid. Counted as on time.');
+    };
+    const doShift = () => {
+      const st = self.state;
+      const od = st.inst.find((x) => x.status === 'missed');
+      if (!od || od.shifted || st.drawsPaused) return;
+      const inst = st.inst.map((x) => (x.id === od.id ? Object.assign({}, x, { status: 'shifted', shifted: true, due: x.due + st.shiftDays * DAY }) : x));
+      set({ inst: inst, events: st.events.concat([{ t: now, text: 'Free date shift used: +' + st.shiftDays + ' days', cls: '' }]) });
+      toast('Date moved. No charge.');
+    };
+    const acceptUp = () => {
+      const st = self.state;
+      if (growthLocked || !stepUpReady) return;
+      const nt = st.tier + 1;
+      const note = 'You paid ' + streak + ' repayments on time in a row, so your limit moved from ' + inr(L.limit) + ' to ' + inr(nextL.limit) + '. You accepted it. Limits never rise on their own.';
+      set({ tier: nt, pulse: true, sheet: 'learn', learn: 'tier', tierNote: note, events: st.events.concat([{ t: now, text: 'Limit moved up to ' + inr(nextL.limit), cls: 'ok' }]) });
+      setTimeout(() => set({ pulse: false }), 1400);
+    };
+    const toggleConsent = (k) => () => {
+      const st = self.state;
+      const on = !st.consent[k];
+      const c = Object.assign({}, st.consent); c[k] = on;
+      const at = Object.assign({}, st.consentAt); at[k] = on ? stamp() : '';
+      const p = { consent: c, consentAt: at };
+      if (k === 'inflow') p.withdrawn = !on && st.loans.length > 0;
+      set(p);
+    };
+    const buy = (cat, amt) => () => {
+      const st = self.state;
+      const pay = Math.round(amt * (1 - cat.disc / 100));
+      if (pay > balance) { toast('Not enough in your account for that.'); return; }
+      const purchases = st.purchases.concat([{ t: now, amt: amt, pay: pay, cat: cat.label }]);
+      const wk = purchases.filter((p) => p.t > now - 7 * DAY).reduce((a, p) => a + p.pay, 0);
+      const patch = { purchases: purchases, events: st.events.concat([{ t: now, text: 'Spent ' + inr(pay) + ' on ' + cat.label + ' (saved ' + inr(amt - pay) + ')', cls: '' }]) };
+      if (!spike && base > 0 && wk > thr) patch.sheet = 'advice';
+      set(patch);
+      if (!patch.sheet) toast('Paid ' + inr(pay) + '. You saved ' + inr(amt - pay) + '.');
+    };
+
+    // strings
+    const tierNames = [tn(0), tn(1), tn(2)];
+    const ruleTxt = ['Starting limit', '3 on-time repayments', '6 on-time repayments'];
+    const ladder = [0, 1, 2].map((i) => {
+      const lim = limitFor(avg, i, dep);
+      return { name: tierNames[i], cap: inr(lim.limit), rule: ruleTxt[i], h: 120 + i * 50, cls: i === s.tier ? 'cur' : (i < s.tier ? 'done' : '') };
+    });
+    const reasons = [];
+    reasons.push({ text: 'You put in a ' + inr(dep) + ' refundable deposit. It allows up to ' + inr(L.byDeposit) + ' (1.5 times).', binds: L.binds === 'deposit', dot: L.binds === 'deposit' ? 'warn' : 'ok' });
+    reasons.push({ text: 'Your inflow of ' + inr(avg) + ' a month meets the ₹4,000 minimum, so you can open a limit. It also guides growth: a drop in inflow freezes increases.', binds: false, dot: 'ok' });
+    reasons.push({ text: 'You can use the whole limit, in one spend or many. Each spend is due 30 days after you draw it.', binds: false, dot: 'ok' });
+    let offerNote = '';
+    if (eligible) offerNote = 'The limit is set by your deposit. It grows to 1.75 times at 3 and 2 times at 6 on-time repayments, and only if you accept.';
+
+    const whyLines = [];
+    let whyTitle = 'Why this number';
+    if (s.why === 'limit') {
+      whyTitle = 'Why this limit';
+      whyLines.push({ t: 'Deposit: ' + inr(dep) + ', times ' + MULT[s.tier] + ', allows up to ' + inr(L.byDeposit) + '.' });
+      whyLines.push({ t: 'Average inflow: ' + inr(avg) + ' a month. This meets the ₹4,000 minimum and guides growth. It does not shrink your starting limit.' });
+      whyLines.push({ t: 'Your limit is ' + inr(L.limit) + '. You can use all of it, in one spend or many.' });
+    } else if (s.why === 'avg') {
+      whyTitle = 'Why this average';
+      whyLines.push({ t: 'You said ' + inr(declared) + ' a month (' + inr(famN) + ' family support plus ' + inr(ownN) + ' of your own earnings).' });
+      whyLines.push({ t: 'Your bank statements, six monthly totals: ' + P.months.map(inr).join(', ') + '.' });
+      whyLines.push({ t: 'Sum ' + inr(P.months.reduce((a, b) => a + b, 0)) + ' divided by 6 is ' + inr(bankAvg) + ' a month.' });
+      whyLines.push({ t: 'We use the lower of the two: ' + inr(avg) + ' a month.' });
+      whyLines.push({ t: 'We use totals only. No shops, people or messages.' });
+    } else {
+      whyTitle = 'Why this cost';
+      whyLines.push({ t: 'Spend: ' + inr(amtEff) + ', repaid in one payment 30 days after you draw.' });
+      whyLines.push({ t: 'Repay in full by day 30 and the extra cost is ₹0. Total: ' + inr(amtEff) + '.' });
+      whyLines.push({ t: 'If not repaid: 18% a year, which is 1.5% a month on what is unpaid (' + inr2(amtEff * RATE) + ' for 30 more days), plus a ₹50 late fee once per spend. Assumed.' });
+      whyLines.push({ t: 'If open spends add up to more than a month of your inflow (' + inr(avg) + '), we warn you before you confirm.' });
+    }
+    const learnData = {
+      cost: ['What this does to your score', ['Pay every repayment on time and your lender reports a clean record. That starts your credit history.', 'One missed payment can lower it.', 'Illustrative, not a bureau score.']],
+      miss: ['What a miss does', ['A missed payment can be reported to credit bureaus and lower your score.', 'Paying soon limits the effect.', 'We only contact you. Never your family or friends.', 'Illustrative, not a bureau score.']],
+      tier: ['Why your limit moved', [s.tierNote || 'Your limit moved because you paid on time.']]
+    };
+    const ld = learnData[s.learn] || learnData.cost;
+
+    const statusInfo = (x) => {
+      if (x.status === 'ontime') return { label: x.shifted ? 'On time, shifted' : 'On time', pill: 'ok', dot: 'ok', note: x.shifted ? 'Free date shift used' : 'Paid by autopay' };
+      if (x.status === 'missed') return { label: 'Missed', pill: 'warn', dot: 'warn', note: 'Not paid' };
+      if (x.status === 'paidlate') return { label: 'Paid late', pill: 'warn', dot: 'warn', note: 'Paid after the due date' };
+      if (x.status === 'shifted') return { label: 'Shifted', pill: 'lap', dot: '', note: 'New due date after your free shift' };
+      return { label: 'Upcoming', pill: 'neu', dot: '', note: 'Autopay on' };
+    };
+    const timeline = s.inst.map((x) => { const si = statusInfo(x); return { date: dShort(x.due), amt: inr(x.amount), label: si.label, pill: si.pill, dot: si.dot, note: si.note }; });
+    const activity = s.events.slice(-5).reverse().map((e) => ({ text: e.text, when: dShort(e.t), cls: e.cls }));
+    const csv = ['repayment,due,amount_inr,status'].concat(s.inst.map((x) => x.id + ',' + dShort(x.due) + ',' + x.amount + ',' + statusInfo(x).label)).join('\n');
+
+    let stepTitle = '', stepBody = '';
+    if (s.stepDown) {
+      const why = s.stepDown.reason === 'SHIFT_THEN_MISS' ? 'a repayment was missed after your free date shift' : 'the overdue repayment stayed unpaid after the 7-day window';
+      if (s.stepDown.from === s.stepDown.to) {
+        stepTitle = 'New draws are paused';
+        stepBody = 'You are on the first step, so your limit step stays. New draws are paused. Reason: ' + why + '.';
+      } else {
+        stepTitle = 'Your limit moved down one step';
+        stepBody = 'Your limit moved from ' + tn(s.stepDown.from) + ' to ' + tn(s.stepDown.to) + ', and new draws are paused. Reason: ' + why + '.';
+      }
+    }
+
+    // score bands
+    const bands = ['No history yet', 'Building', 'Good', 'Strong'];
+    // Ascend index: 300 to 900, built from the five factors credit bureaus are commonly said to weigh. Illustrative.
+    const lateN = s.inst.filter((x) => x.status === 'paidlate' || x.status === 'missed').length;
+    const settledN = onTimeCount + lateN;
+    const hasScore = settledN > 0;
+    const phF = settledN ? Math.pow(onTimeCount / settledN, 2) * Math.min(1, onTimeCount / 4) : 0;
+    const utilNow = limitNow ? outstanding / limitNow : 0;
+    const utF = utilNow <= 0.3 ? 1 : Math.max(0.6, 1 - (utilNow - 0.3) * 0.57);
+    const histDays = s.loans.length ? Math.max(0, (now - s.loans[0].at) / DAY) : 0;
+    const hiF = Math.min(1, histDays / 365);
+    const FW = [0.35, 0.30, 0.15, 0.10, 0.10];
+    const FV = [phF, utF, hiF, 0.4, 1];
+    const pts = FV.map((v, i) => Math.round(600 * FW[i] * v));
+    const score = Math.min(900, 300 + pts.reduce((a, b) => a + b, 0));
+    const cibilBand = (v) => (v >= 750 ? ['Excellent', '#1F7A4D'] : (v >= 650 ? ['Good', '#0E7C86'] : (v >= 550 ? ['Fair', '#B7791F'] : ['Poor', '#B3261E'])));
+    const bandIdx = !hasScore ? 0 : (score >= 750 ? 3 : (score >= 650 ? 2 : 1));
+    const cb = cibilBand(score);
+    const fNames = ['Payment history', 'Use of your limit', 'Length of history', 'Mix of credit', 'New credit enquiries'];
+    const fWhat = [
+      onTimeCount + ' on time, ' + lateN + ' late. Builds with every on-time repayment.',
+      'You are using ' + Math.round(utilNow * 100) + '% of your limit. Under 30% scores best.',
+      Math.round(histDays) + ' days since your first draw. This only grows with time.',
+      'One revolving line. A fuller mix comes with time.',
+      'Only your lender checked you. No other hard enquiries.'
+    ];
+    const fAnalog = [['Same signal', 'ok'], ['Same signal', 'ok'], ['Partly', 'warn'], ['Weak', 'neu'], ['Partly', 'warn']];
+    const factors = fNames.map((n, i) => ({ name: n, weight: Math.round(FW[i] * 100) + '%', w: Math.round(FV[i] * 100), pts: '+' + pts[i] + ' of ' + Math.round(600 * FW[i]), what: fWhat[i], an: fAnalog[i][0], anCls: fAnalog[i][1] }));
+    const gains = FV.map((v, i) => ({ i: i, g: Math.round(600 * FW[i] * (1 - v)) })).filter((x) => x.i !== 2 && x.i !== 3).sort((a, b) => b.g - a.g)[0];
+    const gainText = !hasScore ? '' : (gains.g > 0 ? 'Biggest gain available: ' + fNames[gains.i].toLowerCase() + ', worth up to ' + gains.g + ' more points.' : 'You are at the top on every factor you can change today.');
+    const traj = [1, 2, 3, 4, 5, 6, 7, 8].map((k) => {
+      const v = Math.min(900, Math.round(300 + 600 * (0.35 * Math.min(1, k / 4) + 0.30 + 0.15 * Math.min(1, 30 * k / 365) + 0.04 + 0.10)));
+      const c = cibilBand(v)[1];
+      const cur = hasScore && k === Math.min(8, Math.max(1, onTimeCount));
+      return { n: k, v: v, st: 'height:' + Math.round((v - 300) / 600 * 150) + 'px;background:' + c + ';' + (cur ? 'outline:3px solid #12202A;outline-offset:2px;' : 'opacity:.85;') };
+    });
+    const lo = Math.max(300, score - 40), hi = Math.min(900, score + 20);
+    const bandBars = [0, 1, 2, 3].map((i) => ({ h: 24 + i * 18, c: bandIdx > 0 && i <= bandIdx - 0 && i < bandIdx + 1 && i <= bandIdx ? (i <= bandIdx && bandIdx > 0 ? '#0E7C86' : '#D3D9E0') : '#D3D9E0' }));
+    const bandNotes = ['Your record starts with your first on-time repayment.', 'You have started a record. Keep paying on time.', 'A solid record. Keep your use of the limit low to climb higher.', 'A strong record. This is the kind of record a bank looks for.'];
+    const remain = s.tier >= 2 ? 0 : Math.max(0, (s.tier + 1) * 3 - streak);
+    const remainText = !s.depLocked ? 'Put in a deposit to start building your limit.' : (s.tier >= 2 ? 'You are on the top step of the Starter limit.' : 'Pay ' + remain + ' more on time to unlock the next step.');
+
+    const spends = open.slice().sort((a, b) => a.due - b.due).map((x) => ({
+      text: inr(x.amount) + (x.status === 'missed' ? ' was due ' : ' due ') + dShort(x.due) + (x.status === 'missed' ? ' (overdue)' : (x.status === 'shifted' ? ' (date moved)' : '')),
+      dot: x.status === 'missed' ? 'warn' : '', pay: payInst(x.id)
+    }));
+    const usePct = limitNow ? Math.min(100, (outstanding / limitNow) * 100) : 0;
+    const limitUse = inr(outstanding) + ' of ' + inr(limitNow) + ' in use';
+
+    // console
+    if (!self._co) self._co = makeCohort();
+    const co = self._co;
+    const instBy = [0, 0, 0], lateBy = [0, 0, 0], cnt = [0, 0, 0];
+    let f1 = 0, f3 = 0, f6 = 0, fg = 0, sumDep = 0, sumLim = 0, carryTot = 0;
+    co.forEach((u) => {
+      carryTot += u.carry; instBy[u.tier] += u.n; lateBy[u.tier] += u.late; cnt[u.tier] += 1; sumDep += u.dep; sumLim += u.limit;
+      if (u.n - u.late - u.carry >= 1) f1 += 1;
+      if (u.streak >= 3) f3 += 1;
+      if (u.streak >= 6) f6 += 1;
+      if (u.status === 'Graduated') fg += 1;
+    });
+    const liveOn = s.loans.length > 0;
+    if (liveOn) {
+      const resolved = s.inst.filter((x) => x.status === 'ontime' || x.status === 'missed' || x.status === 'paidlate');
+      instBy[s.tier] += resolved.length;
+      lateBy[s.tier] += resolved.filter((x) => x.status !== 'ontime').length;
+      cnt[s.tier] += 1; sumDep += s.depLocked ? dep : 0; sumLim += limitNow;
+      if (onTimeCount >= 1) f1 += 1;
+      if (streak >= 3) f3 += 1;
+      if (streak >= 6) f6 += 1;
+      if (s.tier === 2) fg += 1;
+    }
+    const activated = 200 + (liveOn ? 1 : 0);
+    const totInst = instBy[0] + instBy[1] + instBy[2];
+    const totLate = lateBy[0] + lateBy[1] + lateBy[2];
+    const latePct = totInst ? (totLate / totInst) * 100 : 0;
+    const northPct = (f6 / activated) * 100;
+    const pctOf = (a, b) => (b ? (a / b) * 100 : 0);
+    const lateTier = [0, 1, 2].map((i) => pctOf(lateBy[i], instBy[i]));
+    const riskState = latePct > 10 ? 'bad' : (latePct >= 6 ? 'warn' : 'ok');
+    const colorFor = (p) => (p > 10 ? '#B3261E' : (p >= 6 ? '#B7791F' : '#1F7A4D'));
+    const lateBars = [0, 1, 2].map((i) => ({ name: tierNames[i], v: lateTier[i].toFixed(1) + '%', h: Math.max(2, Math.min(190, (lateTier[i] / 12) * 160)), c: colorFor(lateTier[i]) }));
+    const liveRow = {
+      cls: 'live', id: 'You (live)', tier: liveOn ? tn(s.tier) : '-', dl: s.depLocked ? inr(dep) + ' to ' + inr(limitNow) : 'No deposit yet',
+      inst: liveOn ? onTimeCount + ' of ' + s.inst.filter((x) => x.status !== 'upcoming' && x.status !== 'shifted').length + ' on time' : 'Not drawn yet',
+      delay: hasOverdue ? 'Overdue' : 'None',
+      status: !liveOn ? 'Not drawn' : (hasOverdue ? 'Missed' : (s.drawsPaused ? 'Paused' : (s.tier === 2 ? 'Graduated' : 'Current'))),
+      pill: !liveOn ? 'neu' : (hasOverdue || s.drawsPaused ? 'warn' : 'ok')
+    };
+    const flt = s.filter;
+    const filtered = co.filter((u) => flt === 'all' || u.tier === flt);
+    const rows = [liveRow].concat(filtered.slice(0, 7).map((u) => ({
+      cls: '', id: u.id, tier: tn(u.tier), dl: inr(u.dep) + ' to ' + inr(u.limit), inst: (u.n - u.late - u.carry) + ' of ' + u.n + ' on time',
+      delay: u.maxDelay ? u.maxDelay + ' days' : 'None', status: u.status, pill: u.status === 'Current' ? 'ok' : (u.status === 'Graduated' ? 'lap' : 'warn')
+    })));
+    const filters = [['all', 'All'], [0, tn(0)], [1, tn(1)], [2, tn(2)]].map((f) => ({ label: f[1], cls: flt === f[0] ? 'pri' : 'sec', pick: () => set({ filter: f[0] }) }));
+
+    // flags
+    const isApp = s.view === 'app';
+    const stepIdx = { consent: 0, inflow: 1, deposit: 1, offer: 2, draw: 3, money: 3, spend: 4, home: 5, repay: 5, score: 6, record: 6 }[scr];
+    const stepLabels = ['Sign up', 'Deposit', 'Initial limit', 'See total cost', 'Spend it', 'Repay on time', 'Score and limit'];
+    const steps = stepLabels.map((l, i) => ({ n: i + 1, label: l, cls: i === stepIdx ? 'cur' : (i < stepIdx ? 'done' : ''), line: i < 6 }));
+    const showLinks = isApp && s.loans.length > 0 && ['home', 'spend', 'score', 'record', 'repay', 'draw', 'money'].indexOf(scr) >= 0;
+    const showChip = isApp && (['offer', 'draw', 'money', 'spend', 'home', 'repay', 'score', 'record'].indexOf(scr) >= 0 || (scr === 'about' && s.depLocked));
+    const guided = isApp && s.loans.length === 0 && ['offer', 'draw'].indexOf(scr) >= 0;
+    const backMapTo = { consent: 'welcome', inflow: 'consent', deposit: 'inflow', offer: 'deposit' };
+    const drawBlockedDeposit = !s.depLocked;
+    const blockPaused = s.drawsPaused;
+    const blockWithdrawn = s.withdrawn;
+    const drawBlocked = blockPaused || blockNoRoom || blockWithdrawn || drawBlockedDeposit;
+
+    const privacyDefs = [['id', 'Identity and age'], ['inflow', 'Monthly inflow totals'], ['mobile', 'Mobile number'], ['bureau', 'Credit bureau reporting']];
+    const privacy = privacyDefs.map((d) => ({
+      title: d[1], state: s.consent[d[0]] ? 'Granted ' + (s.consentAt[d[0]] || '') : 'Withdrawn',
+      btn: s.consent[d[0]] ? 'Withdraw' : 'Grant', act: toggleConsent(d[0])
+    }));
+    const consentDefs = [
+      ['id', 'Identity and age', 'Date of birth is used for the age check only. DigiLocker returns an age band, never your Aadhaar number. We also confirm your college enrolment.'],
+      ['inflow', 'Monthly inflow totals', 'Work out how much you can borrow. We keep monthly totals only, not shops or people.'],
+      ['mobile', 'Mobile number', 'Send repayment reminders to you and nobody else.'],
+      ['bureau', 'Credit bureau reporting', 'Your lender reports on-time and late repayments. Good repayments build your score; missed ones lower it.']
+    ];
+    const consentItems = consentDefs.map((d) => ({
+      title: d[1], purpose: d[2], on: s.consent[d[0]], cls: s.consent[d[0]] ? 'on' : '', pill: 'Required', pillCls: s.consent[d[0]] ? 'ok' : 'neu',
+      at: 'Granted ' + (s.consentAt[d[0]] || ''), toggle: toggleConsent(d[0])
+    }));
+    const allConsent = s.consent.id && s.consent.inflow && s.consent.mobile && s.consent.bureau;
+
+    const bmax = Math.max.apply(null, P.months) * 1.12;
+    const bars = P.months.map((v, i) => ({ m: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'][i], v: inr(v), h: Math.round((v / bmax) * 170) }));
+    const profiles = Object.keys(PROFILES).map((k) => ({
+      label: PROFILES[k].label, avg: inr(PROFILES[k].avg), cls: k === s.profile ? 'on' : '', pick: () => set({ profile: k })
+    }));
+    const lastLoan = s.loans[s.loans.length - 1];
+    const loanWindow = !!lastLoan && lastLoan.n === 1;
+    const overdueCost = hasOverdue ? 'Cost so far: a ₹50 late fee, plus ' + inr2(overdue[0].amount * RATE) + ' interest for each 30 days it stays unpaid.' : '';
+    const firstInstDue = lastLoan ? s.inst.find((x) => x.loan === lastLoan.id).due : now + 30 * DAY;
+    const depChips = [2000, 3000, 5000].map((d) => ({ label: inr(d), cls: d === dep ? 'on' : '', pick: () => set({ depAmt: d }) }));
+    const shiftChips = [1, 2, 3, 4, 5, 6, 7].map((d) => ({ d: d, cls: d === s.shiftDays ? 'on' : '', pick: () => set({ shiftDays: d }) }));
+    const meter = [0, 1, 2].map((i) => ({ h: 30 + i * 28, c: i < meterFilled ? '#0E7C86' : '#D3D9E0' }));
+    const jumps = SCREENS.map((sc, i) => ({ n: i + 1, name: sc[1], cls: isApp && scr === sc[0] ? 'on' : '', go: go(sc[0]) }));
+    const moneyStages = ['Lender is sending', 'In transit', 'In your account'];
+    const nextDate = nx ? dShort(nx.due) : '';
+    const catsArr = CATS.map((c) => ({ label: c.label, cls: s.cats.indexOf(c.k) >= 0 ? 'on' : '', pick: () => { const st = self.state; const has = st.cats.indexOf(c.k) >= 0; set({ cats: has ? st.cats.filter((x) => x !== c.k) : st.cats.concat([c.k]) }); } }));
+    const selCats = CATS.filter((c) => s.cats.indexOf(c.k) >= 0);
+    const offers = selCats.map((c) => ({ label: c.label, disc: c.disc + '% off', text: c.text }));
+    const buys = [];
+    selCats.forEach((c) => { [500, 1000].forEach((a) => buys.push({ text: c.label + ' ' + inr(a), go: buy(c, a) })); });
+    const nextChk = lastLoan ? (() => { let t = lastLoan.at + 60 * DAY; while (t <= now) t += 60 * DAY; return t; })() : now + 60 * DAY;
+    const tipIdx = (s.off + s.loans.length + s.inst.length) % TIPS.length;
+    const withdrawOff = open.length > 0;
+
+    return {
+      isAppView: isApp, isConsoleView: !isApp, showPilot: isApp && !showChip,
+      appCls: isApp ? 'on' : '', conCls: !isApp ? 'on' : '',
+      setApp: () => set({ view: 'app' }), setConsole: () => set({ view: 'console', sheet: null }),
+      jumps: jumps, jumpReminder: jumpReminder, jumpNext: advance(false), markMissed: advance(true),
+      toggleInflow: () => { const on = !self.state.inflowDrop; set({ inflowDrop: on, view: 'app', screen: 'home' }); toast(on ? 'Inflow check shows a drop. Limit growth is frozen.' : 'Inflow has recovered. Limit growth is open again.'); },
+      inflowBtn: s.inflowDrop ? 'Inflow recovers' : 'Inflow drops', inflowOn: s.inflowDrop ? 'on' : '',
+      resetAll: () => { clearTimeout(self._tt); set(fresh()); },
+      nowStr: dShort(now) + ' 2026',
+      showLinks: showLinks, noLinks: !showLinks, showChip: showChip, initials: PROFILES[s.profile].label.charAt(0) + 'S',
+      tierLabel: tn(s.tier) + (s.drawsPaused ? ' · paused' : ''), chipCls: stepUpReady ? 'fill' : (s.drawsPaused ? 'warn' : ''),
+      openTier: () => set({ sheet: 'tier' }),
+      tabHome: scr === 'home' ? 'on' : '', tabRepay: scr === 'repay' ? 'on' : '', tabBorrow: ['offer', 'draw', 'money'].indexOf(scr) >= 0 ? 'on' : '', showSide: showChip && !guided, noSide: !showChip || guided, tabSpend: scr === 'spend' ? 'on' : '', tabScore: scr === 'score' ? 'on' : '', tabRecord: scr === 'record' ? 'on' : '', tabAbout: scr === 'about' ? 'on' : '', toAbout: () => set({ screen: 'about', sheet: null, view: 'app' }), isAbout: scr === 'about', aboutBackLabel: s.depLocked ? 'Back to home' : 'Back to sign up', aboutBack: () => set({ screen: self.state.depLocked ? 'home' : 'welcome' }),
+      toHome: () => set({ screen: 'home', sheet: null }), toSpend: () => set({ screen: 'spend', sheet: null }),
+      toScore: () => set({ screen: 'score', sheet: null }), toRecord: () => set({ screen: 'record', sheet: null }),
+      showStepper: isApp && stepIdx !== undefined, steps: steps,
+
+      isWelcome: scr === 'welcome', isConsent: scr === 'consent', isInflow: scr === 'inflow', isDeposit: scr === 'deposit', isOffer: scr === 'offer',
+      isDraw: scr === 'draw', isMoney: scr === 'money', isSpend: scr === 'spend', isHome: scr === 'home', isRepay: scr === 'repay', isScore: scr === 'score', isRecord: scr === 'record',
+
+      phone: s.phone, onPhone: (e) => set({ phone: e.target.value }),
+      showSend: !s.otpSent, sendOff: !phoneOK, sendCode: () => set({ otpSent: true }),
+      otpSent: s.otpSent, otp: s.otp, onOtp: (e) => set({ otp: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      fillOtp: () => set({ otp: '123456' }), otpOK: otpOK, otpNotOK: !otpOK, otpWrong: s.otp.length === 6 && !otpOK,
+      otpCls: s.otp.length === 6 && !otpOK ? 'err' : '',
+      dob: s.dob, onDob: (e) => set({ dob: e.target.value, dl: false }),
+      oddAge: oddAge, showDl: dobOK && age >= 18 && age <= 30, dlTodo: !s.dl, dlDone: !!s.dl, verifiedAll: verifiedAll, notVerified: !verifiedAll, lockOff: !eligible || !verifiedAll,
+      doDl: () => { set({ dl: true }); toast('DigiLocker check passed (demo).'); }, dobCls: underage || (s.dob.length > 0 && !dobOK) ? 'err' : '', underage: underage,
+      enrol: s.enrol, onEnrol: (e) => set({ enrol: e.target.value }),
+      enrolBad: s.enrol.trim().length >= 6 && !enrolOK, enrolGood: enrolOK, enrolCls: s.enrol.trim().length >= 6 && !enrolOK ? 'err' : '',
+      welcomeOff: !welcomeOK, toConsent: () => set({ screen: 'consent' }), toWelcome: () => set({ screen: 'welcome' }),
+
+      consentItems: consentItems, consentOff: !allConsent, toInflow: () => set({ screen: 'inflow' }),
+
+      profiles: profiles, bars: bars, avgBottom: Math.round((bankAvg / bmax) * 170) + 22, avgStr: inr(avg), bankAvgStr: inr(bankAvg), declStr: inr(declared), profChips: profChips, profBlock: !profOK, famVal: String(famN), ownVal: String(ownN), onFam: (e) => set({ fam: e.target.value.replace(/\D/g, '').slice(0, 6) }), onOwn: (e) => set({ own: e.target.value.replace(/\D/g, '').slice(0, 6) }), usedLower: declared < bankAvg, usedBank: declared >= bankAvg, underMin: !eligible, lowInc: profOK && avg < 4000,
+      whyAvg: () => set({ sheet: 'why', why: 'avg' }), toDeposit: () => set({ screen: 'deposit', sheet: null }),
+
+      depChips: depChips, depStr: inr(dep), depLocked: s.depLocked, depOpen: !s.depLocked, lockDeposit: lockDeposit,
+      depPill: s.depLocked ? 'ok' : 'neu', depPillText: s.depLocked ? inr(dep) + ' locked' : 'Not yet locked', sigDepCls: s.depLocked ? 'ok' : '',
+      limitPreview: inr(eligible ? L.limit : 0), toOffer: () => set({ screen: 'offer' }),
+
+      freeze: s.freeze, limitStr: inr(limitNow), whyLimit: () => set({ sheet: 'why', why: 'limit' }),
+      reasons: reasons, hasNote: offerNote.length > 0, offerNote: offerNote, ladder: ladder,
+      toDraw: () => set({ screen: 'draw', ack: false, sheet: null }),
+
+      blockDeposit: drawBlockedDeposit && (scr === 'draw' || scr === 'spend') && (s.loans.length > 0 || scr === 'draw'),
+      blockPaused: blockPaused, blockWithdrawn: blockWithdrawn,
+      maxStr: inr(maxAmt), maxAmt: maxAmt, amountVal: amtEff, amountStr: inr(amtEff),
+      onAmount: (e) => set({ amount: +e.target.value }), ceilingNote: ceilingNote, overInflow: (outstanding + amtEff) > avg, openAfterStr: inr(outstanding + amtEff), inflowStr: inr(avg), limitLine: limitLine, blockNoRoom: blockNoRoom, spends: spends, usePct: usePct, limitUse: limitUse,
+      drawTitle: drawTitle, drawLead: drawLead, missHead: missHead, missText: missText, payLabel: payLabel, rateNote: rateNote,
+      exTitle: exTitle, exRows: exRows, exWorst: exWorst, chargeRows: chargeRows, loanWindow: loanWindow, overdueCost: overdueCost,
+      ceilingText: 'Part of your limit is in use. It refills as each spend is repaid.',
+      monthlyStr: inr(cc.m), totalStr: inr(cc.t), interestStr: inr(cc.i), whyCost: () => set({ sheet: 'why', why: 'cost' }),
+      learnCost: () => set({ sheet: 'learn', learn: 'cost' }),
+      ackCls: s.ack ? 'on' : '', ackShow: s.ack ? '' : 'display:none', toggleAck: () => set({ ack: !s.ack }),
+      confirmOff: !s.ack || drawBlocked, confirmDraw: confirmDraw,
+
+      moneyTitle: lastLoan ? inr(lastLoan.principal) + (s.stage === 2 ? ' is in your account' : ' is on its way') : 'Your money is on its way',
+      nodeA: s.stage >= 1 ? 'live' : '', arrA: s.stage >= 2 ? 'live' : '', nodeB: s.stage >= 2 ? 'live' : '',
+      moneyStatus: moneyStages[Math.min(2, s.stage)], moneyPill: s.stage >= 2 ? 'ok' : 'lap',
+      firstAmt: lastLoan ? inr(lastLoan.monthly) : inr(cc.m), firstDate: dShort(firstInstDue),
+      moneyOff: s.stage < 2,
+
+      noBalance: s.loans.length === 0, hasBalance: s.loans.length > 0, balanceStr: inr(balance), savedStr: inr(savedSum),
+      cats: catsArr, offers: offers, buys: buys, hasPurchases: s.purchases.length > 0,
+      purchaseList: s.purchases.slice(-4).reverse().map((p) => ({ text: p.cat + ': paid ' + inr(p.pay) + ', saved ' + inr(p.amt - p.pay), when: dShort(p.t) })),
+      weekStr: inr(weekly), thrStr: inr(thr), weekW: thr ? Math.min(100, (weekly / thr) * 100) : 0, weekColor: spike ? '#B7791F' : '#0E7C86',
+
+      userName: PROFILES[s.profile].label.split(',')[0].replace(' student', ''),
+      reminderOn: reminderNo > 0, reminderText: reminderText, nextAmt: nx ? inr(nx.amount) : '', nextDate: nextDate, nextDateOrDash: nx ? nextDate : 'None',
+      hasNext: !!nx, noNext: !nx, pulseCls: s.pulse ? 'pulse' : '',
+      meter: meter, meterText: s.tier >= 2 ? 'Top step' : meterFilled + ' of 3 on-time',
+      meterCap: s.tier >= 2 ? 'You are on the top step.' : (stepUpReady ? 'A new limit is ready for you.' : (3 - meterFilled) + ' more on-time repayments to the next limit.'),
+      stepUpReady: stepUpReady, inflowCapped: inflowCapped, notYet: !stepUpReady && !inflowCapped, streak: streak,
+      nextLimitStr: nextL ? inr(nextL.limit) : '', acceptUp: acceptUp, growthLocked: growthLocked, hasGrowth: growthLocked, growthMsg: growthMsg,
+      payNow: payNow, toRepay: () => set({ screen: 'repay' }), activity: activity,
+      showTip: s.tipSeen !== s.off, tipText: TIPS[tipIdx], dismissTip: () => set({ tipSeen: s.off }),
+      nextCheck: dShort(nextChk), checkPill: s.inflowDrop ? 'Inflow dropped' : 'On track', checkCls: s.inflowDrop ? 'warn' : 'ok',
+      sponsor: s.sponsor, sponsorCls: s.sponsor ? 'on' : '',
+      toggleSponsor: () => { const on = !self.state.sponsor; set({ sponsor: on, spSent: on ? self.state.spSent : false, events: self.state.events.concat([{ t: now, text: on ? 'Parent progress sharing turned on' : 'Parent progress sharing turned off', cls: '' }]) }); toast(on ? 'Sharing is on. Nothing is sent until you send the link.' : 'Sharing stopped. The link no longer works.'); },
+      spOff: !s.sponsor, spNum: s.spNum, spSent: s.spSent, spNotSent: !s.spSent, spBad: s.spNum.replace(/\D/g, '').length !== 10,
+      onSpNum: (e) => set({ spNum: e.target.value }), previewParent: () => set({ sheet: 'sponsor' }),
+      sendInvite: () => { const st = self.state; set({ spSent: true, events: st.events.concat([{ t: now, text: 'Read-only progress link sent to a parent', cls: '' }]) }); toast('Read-only link sent (demo).'); },
+
+      repayTitle: hasOverdue ? 'Let us fix this together' : 'Your next repayment',
+      repayLead: hasOverdue ? 'A missed repayment is not the end of the road. Here is what you can do.' : 'Autopay takes it on the due date. You can also pay early.',
+      hasOverdue: hasOverdue, overdueAmt: inr(overdueAmt), overdueDate: hasOverdue ? dShort(overdue[0].due) : '',
+      hasStepDown: !!s.stepDown && s.drawsPaused, stepTitle: stepTitle, stepBody: stepBody,
+      canShift: hasOverdue && !overdue[0].shifted && !s.drawsPaused, shiftDone: hasOverdue && overdue[0].shifted,
+      shiftChips: shiftChips, shiftDays: s.shiftDays, doShift: doShift, onTrack: !hasOverdue, recoveryOn: s.recovery && !hasOverdue,
+
+      hasScore: hasScore, noScore: !hasScore, scoreStr: String(score), cibName: cb[0], cibCol: cb[1], gaugePos: Math.round((score - 300) / 600 * 1000) / 10, estRange: lo + ' to ' + hi, factors: factors, gainText: gainText, hasGain: gainText.length > 0, traj: traj, onTimeN: onTimeCount, bandName: bands[bandIdx], bandBars: bandBars, bandNote: bandNotes[bandIdx], remainText: remainText,
+
+      tierShort: tn(s.tier), onTimeCount: onTimeCount, noInst: !s.inst.length, timeline: timeline, hasLoan: !!lastLoan,
+      receipt: lastLoan ? inr(lastLoan.principal) + ' from your partner lender to your account ending 4821, ' + dShort(lastLoan.at) + '.' : '',
+      openCsv: () => set({ sheet: 'csv' }), csvText: csv, gradOn: s.tier >= 2,
+      shareBank: () => toast('Your consent is asked first. Sandbox partner only.'),
+      privacy: privacy, openDelete: () => set({ sheet: 'delete' }),
+      withdrawOff: withdrawOff, withdrawDeposit: withdrawDeposit,
+      withdrawNote: withdrawOff ? 'Available once your draw is repaid.' : 'Your draw is repaid, so you can withdraw. This closes your limit.',
+      doDelete: () => set(Object.assign(fresh(), { deleted: true })), deleted: s.deleted,
+
+      sheetWhy: s.sheet === 'why', sheetLearn: s.sheet === 'learn', sheetTier: s.sheet === 'tier', sheetSponsor: s.sheet === 'sponsor',
+      sheetCsv: s.sheet === 'csv', sheetDelete: s.sheet === 'delete', sheetAdvice: s.sheet === 'advice',
+      whyTitle: whyTitle, whyLines: whyLines, learnTitle: ld[0], learnLines: ld[1].map((t) => ({ t: t })),
+      closeSheet: () => set({ sheet: null }), stop: (e) => { if (e && e.stopPropagation) e.stopPropagation(); },
+      hasToast: s.toast.length > 0, toast: s.toast,
+
+      freezeCls: s.freeze ? 'on' : '', toggleFreeze: () => { const on = !self.state.freeze; set({ freeze: on }); toast(on ? 'Limit increases frozen. Open the borrower app to see it.' : 'Limit increases are open again.'); },
+      riskBad: riskState === 'bad',
+      kActivated: activated, kNorth: northPct.toFixed(0) + '%', northW: Math.min(100, northPct),
+      kWindow: Math.max(0, ((totInst - totLate - carryTot) / totInst) * 100).toFixed(0) + '%', windowW: Math.max(0, ((totInst - totLate - carryTot) / totInst) * 100), kLate: latePct.toFixed(1) + '%', lateW: Math.min(100, (latePct / 15) * 100), lateColor: colorFor(latePct),
+      latePill: riskState, lateState: riskState === 'ok' ? 'Healthy: under 6%' : (riskState === 'warn' ? 'Freeze limit increases' : 'Stop new onboarding'),
+      kCover: sumLim ? Math.round((sumDep / sumLim) * 100) + '%' : '0%',
+      tierMix: [0, 1, 2].map((i) => ({ name: tierNames[i], n: cnt[i], pct: Math.round(pctOf(cnt[i], activated)) + '%' })),
+      y6: 22 + (6 / 12) * 160, y10: 22 + (10 / 12) * 160, lateBars: lateBars,
+      funnel: [['Activated', activated], ['1 repayment on time', f1], ['3 on time in a row', f3], ['6 on time in a row', f6], ['Graduated to a bank', fg]].map((f) => ({ name: f[0], n: f[1], w: Math.max(1, pctOf(f[1], activated)) })),
+      filters: filters, rows: rows, rowsShown: rows.length, rowsTotal: activated
+    };
+  }
+}
+</script>
+<script>
+(function () {
+  var probe = function () {
+    var els = document.querySelectorAll('.pname[data-slug]:not([data-done])');
+    for (var i = 0; i < els.length; i++) {
+      (function (el) {
+        el.setAttribute('data-done', '1');
+        var slug = el.getAttribute('data-slug'), name = el.textContent, exts = ['svg', 'png'];
+        var tryNext = function () {
+          var ext = exts.shift(); if (!ext) return;
+          var im = new Image();
+          im.onload = function () { im.alt = name + ' logo'; el.textContent = ''; el.appendChild(im); };
+          im.onerror = tryNext;
+          im.src = 'logos/' + slug + '.' + ext;
+        };
+        tryNext();
+      })(els[i]);
+    }
+  };
+  new MutationObserver(probe).observe(document.documentElement, { childList: true, subtree: true });
+  probe();
+})();
+</script>
+</body>
+</html>
